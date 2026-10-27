@@ -97,12 +97,9 @@ def javdb_search(code, cache):
 
 # ---------- BitTorrent 直抽（libtorrent，无需 RD） ----------
 
-def torrent_fetch_cover(view_link):
-    """下载 .torrent，从 swarm 只拉最小的图片文件。返回 bytes 或 None"""
+def torrent_fetch_cover(view_link, ih):
+    """取种子元数据：先直下 .torrent，被墙则走 magnet/DHT。然后只拉最小图片文件。返回 bytes 或 None"""
     import tempfile
-    m = re.search(r"/view/(\d+)", view_link or "")
-    if not m:
-        return None
     try:
         import libtorrent as lt
     except ImportError:
@@ -110,23 +107,50 @@ def torrent_fetch_cover(view_link):
         return None
     tmp_t = None
     try:
-        status, raw = http_bytes(f"https://sukebei.nyaa.si/download/{m.group(1)}.torrent", timeout=25)
-        if status != 200 or len(raw) < 100:
-            return None
-        with tempfile.NamedTemporaryFile(suffix=".torrent", delete=False) as f:
-            f.write(raw)
-            tmp_t = f.name
-        info = lt.torrent_info(tmp_t)
-        fs = info.files()
-        imgs = [(i, fs.file_size(i), fs.file_path(i)) for i in range(fs.num_files())
-                if fs.file_path(i).lower().endswith(IMG_EXT) and 5000 < fs.file_size(i) < 2_000_000]
-        if not imgs:
-            return None
-        imgs.sort(key=lambda x: (not IMG_PREFER.search(x[2]), x[1]))
-        best = imgs[0][0]
         with tempfile.TemporaryDirectory() as td:
-            ses = lt.session({"listen_interfaces": "0.0.0.0:6881", "upload_rate_limit": 10000})
-            h = ses.add_torrent({"ti": info, "save_path": td})
+            ses = lt.session({"listen_interfaces": "0.0.0.0:6881", "upload_rate_limit": 10000,
+                              "announce_to_all_trackers": True, "announce_to_all_tiers": True})
+            info = None
+            h = None
+            # 1) .torrent 直下（最快）
+            m = re.search(r"/view/(\d+)", view_link or "")
+            if m:
+                try:
+                    status, raw = http_bytes(f"https://sukebei.nyaa.si/download/{m.group(1)}.torrent", timeout=20)
+                    if status == 200 and len(raw) > 100:
+                        with tempfile.NamedTemporaryFile(suffix=".torrent", delete=False) as f:
+                            f.write(raw)
+                            tmp_t = f.name
+                        info = lt.torrent_info(tmp_t)
+                        h = ses.add_torrent({"ti": info, "save_path": td})
+                except Exception:
+                    info = None
+            # 2) magnet + DHT 拿元数据（绕开 nyaa 对云 IP 的 HTTP 封锁）
+            if info is None:
+                try:
+                    h = lt.add_magnet_uri(ses, f"magnet:?xt=urn:btih:{ih}", {"save_path": td})
+                    t0 = time.time()
+                    while time.time() - t0 < 90:
+                        if h.has_metadata():
+                            break
+                        time.sleep(2)
+                    if not h.has_metadata():
+                        print("   ⏱ DHT 元数据超时 (90s)")
+                        ses.remove_torrent(h)
+                        return None
+                    info = h.get_torrent_file()
+                except Exception as e:
+                    print(f"   ⚠️ magnet 失败: {e}")
+                    return None
+            fs = info.files()
+            imgs = [(i, fs.file_size(i), fs.file_path(i)) for i in range(fs.num_files())
+                    if fs.file_path(i).lower().endswith(IMG_EXT) and 5000 < fs.file_size(i) < 2_000_000]
+            if not imgs:
+                if h:
+                    ses.remove_torrent(h)
+                return None
+            imgs.sort(key=lambda x: (not IMG_PREFER.search(x[2]), x[1]))
+            best = imgs[0][0]
             for i in range(fs.num_files()):
                 h.file_priority(i, 7 if i == best else 0)
             t0 = time.time()
@@ -328,7 +352,7 @@ def main():
         if not poster and FETCH_VIA_TORRENT and torrent_used < TORRENT_FETCH_MAX:
             torrent_used += 1
             print(f"🧲 [{ih[:8]}] BT 抽图: {title[:40]}")
-            content = torrent_fetch_cover(it.get("link", ""))
+            content = torrent_fetch_cover(it.get("link", ""), ih)
             if content:
                 try_push(it, content, "bt")
             else:
