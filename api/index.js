@@ -68,7 +68,7 @@ function getBuilder() {
         name: "Sukebei 精选",
         description:
           "RSS 精选 Top（每 8 小时更新）· 只返回 infoHash，配合 Real-Debrid 秒播",
-        resources: ["catalog", "stream"],
+        resources: ["catalog", "stream", "meta"],
         types: ["movie"],
         catalogs: keywords.map((k) => ({
           type: "movie",
@@ -90,6 +90,14 @@ function getBuilder() {
           .filter(Boolean)
           .map(toMeta);
         return Promise.resolve({ metas });
+      });
+
+      // 自建 id（裸 infoHash）Cinemeta 查不到，必须自己提供 meta，否则点进条目报
+      // "No addons were requested for this meta!" 且不会请求 stream
+      builder.defineMetaHandler(({ type, id }) => {
+        const item = cat.items[id];
+        if (!item) return Promise.reject({ noHandler: true });
+        return Promise.resolve({ meta: toMeta(item) });
       });
 
       builder.defineStreamHandler(({ type, id }) => {
@@ -145,8 +153,8 @@ module.exports = async (req, res) => {
       res.setHeader("Content-Type", "application/json");
       return res.end(JSON.stringify(iface.manifest));
     }
-    // /catalog/{type}/{id}.json 或 /catalog/{type}/{id}/{k=v&k=v}.json（stream 同构）
-    const m = path.match(/^\/(catalog|stream)\/([^/]+)\/([^/]+?)(?:\/([^/]+))?\.json$/);
+    // /catalog/{type}/{id}.json 或 /catalog/{type}/{id}/{k=v&k=v}.json（stream/meta 同构）
+    const m = path.match(/^\/(catalog|stream|meta)\/([^/]+)\/([^/]+?)(?:\/([^/]+))?\.json$/);
     if (!m) {
       res.statusCode = 404;
       return res.end("Not Found");
