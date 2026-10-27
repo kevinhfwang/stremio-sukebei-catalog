@@ -133,10 +133,15 @@ module.exports = async (req, res) => {
     return res.end();
   }
   const path = req.url.split("?")[0];
+  // 根路径 302 到 /manifest.json：客户端最终拿到的 transport URL 才以 /manifest.json 结尾
+  if (path === "/" || path === "") {
+    res.statusCode = 302;
+    res.setHeader("Location", "/manifest.json");
+    return res.end();
+  }
   try {
     const iface = (await getBuilder()).getInterface();
-    // Stremio 部分客户端直接请求根 URL 当 manifest，根路径必须回 JSON
-    if (path === "/" || path === "" || path === "/manifest.json") {
+    if (path === "/manifest.json") {
       res.setHeader("Content-Type", "application/json");
       return res.end(JSON.stringify(iface.manifest));
     }
