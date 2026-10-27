@@ -133,10 +133,10 @@ module.exports = async (req, res) => {
     return res.end();
   }
   const path = req.url.split("?")[0];
-  if (path === "/" || path === "") return landing(res);
   try {
     const iface = (await getBuilder()).getInterface();
-    if (path === "/manifest.json") {
+    // Stremio 部分客户端直接请求根 URL 当 manifest，根路径必须回 JSON
+    if (path === "/" || path === "" || path === "/manifest.json") {
       res.setHeader("Content-Type", "application/json");
       return res.end(JSON.stringify(iface.manifest));
     }
