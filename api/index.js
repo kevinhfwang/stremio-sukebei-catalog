@@ -132,17 +132,40 @@ module.exports = async (req, res) => {
     res.statusCode = 204;
     return res.end();
   }
-  if (req.url === "/" || req.url === "") return landing(res);
+  const path = req.url.split("?")[0];
+  if (path === "/" || path === "") return landing(res);
   try {
-    const builder = await getBuilder();
-    const router = builder.getRouter();
-    router(req, res, () => {
+    const iface = (await getBuilder()).getInterface();
+    if (path === "/manifest.json") {
+      res.setHeader("Content-Type", "application/json");
+      return res.end(JSON.stringify(iface.manifest));
+    }
+    // /catalog/{type}/{id}.json 或 /catalog/{type}/{id}/{k=v&k=v}.json（stream 同构）
+    const m = path.match(/^\/(catalog|stream)\/([^/]+)\/([^/]+?)(?:\/([^/]+))?\.json$/);
+    if (!m) {
       res.statusCode = 404;
-      res.end("Not Found");
-    });
+      return res.end("Not Found");
+    }
+    const [, resource, type, id, extraSeg] = m;
+    const extra = {};
+    if (extraSeg) {
+      for (const kv of extraSeg.split("&")) {
+        const i = kv.indexOf("=");
+        if (i > 0) extra[decodeURIComponent(kv.slice(0, i))] = decodeURIComponent(kv.slice(i + 1));
+      }
+    }
+    const qi = req.url.indexOf("?");
+    if (qi >= 0) new URLSearchParams(req.url.slice(qi + 1)).forEach((v, k) => (extra[k] = v));
+    const result = await iface.get(resource, type, decodeURIComponent(id), extra);
+    res.setHeader("Content-Type", "application/json");
+    res.end(JSON.stringify(result));
   } catch (e) {
+    if (e && e.noHandler) {
+      res.statusCode = 404;
+      return res.end("Not Found");
+    }
     res.statusCode = 502;
-    res.end("catalog unavailable: " + e.message);
+    res.end("catalog unavailable: " + ((e && e.message) || e));
   }
 };
 
