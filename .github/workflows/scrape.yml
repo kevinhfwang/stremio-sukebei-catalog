@@ -5,7 +5,7 @@ on:
     - cron: '0 */8 * * *'
   push:
     paths:
-      - 'scripts/scrape.py'
+      - 'scripts/*.py'
       - 'data/config.json'
       - '.github/workflows/scrape.yml'
   workflow_dispatch:
