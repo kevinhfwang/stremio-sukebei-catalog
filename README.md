@@ -38,6 +38,13 @@ python3 scripts/catalog_manager.py remove-keyword 关键词
 - 模板必须含 `{keyword}` 占位符
 - 提交前本地抓取验证；加 `--run` 立即触发 Actions 重新抓取，否则下个 8 小时周期生效
 
+## 封面
+
+- 标题含番号（SSIS-950 / FC2-PPV-xxx 等）→ 自动匹配 JavDB 真封面
+- 其余条目 → Real-Debrid 抽取种子内 jpg，托管在 [sukebei-covers](https://github.com/kevinhfwang/sukebei-covers) 仓库
+- 需要仓库 Settings → Secrets 配置：`RD_TOKEN`（[real-debrid.com/apitoken](https://real-debrid.com/apitoken)）、`COVERS_PAT`（fine-grained token，仅 contents 读写 sukebei-covers）
+- 每 8 小时一轮补 40 个（RD 抽图上限 10 个），逐步补满
+
 ## 注意
 
 - 仓库需 **public**（Vercel 用 raw.githubusercontent 免密读 catalog.json）；要 private 就得给 Vercel 配 token
