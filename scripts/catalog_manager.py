@@ -57,15 +57,14 @@ def trigger_run():
 
 
 def check_template(template, sample_kw):
-    """本地验证模板可抓取且有条目"""
+    """本地验证模板可抓取且返回 RSS；返回条目数（0 表示暂无匹配内容，但 feed 有效）"""
     url = template.format(keyword=urllib.parse.quote(sample_kw))
     req = urllib.request.Request(url, headers=UA)
     with urllib.request.urlopen(req, timeout=25) as r:
         raw = r.read().decode("utf-8", errors="ignore")
-    n = raw.count("<item")
-    if n == 0:
-        raise ValueError("feed 无条目或不是 RSS（需要含 <item>）")
-    return n
+    if "<item" not in raw and "<channel" not in raw and "<entry" not in raw:
+        raise ValueError("不是有效 RSS/Atom feed（需要含 <item> 或 <entry>）")
+    return raw.count("<item") + raw.count("<entry")
 
 
 def find_keyword(cfg, key):
