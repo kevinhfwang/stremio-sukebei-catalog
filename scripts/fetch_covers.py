@@ -29,6 +29,9 @@ COVERS_PAT = os.environ.get("COVERS_PAT", "")
 COVERS_REPO = os.environ.get("COVERS_REPO", "kevinhfwang/sukebei-covers")
 COVER_BATCH = int(os.environ.get("COVER_BATCH", "40"))
 RD_FETCH_MAX = int(os.environ.get("RD_FETCH_MAX", "10"))
+FETCH_VIA_TORRENT = os.environ.get("FETCH_VIA_TORRENT", "1") == "1"
+TORRENT_FETCH_MAX = int(os.environ.get("TORRENT_FETCH_MAX", "10"))
+TORRENT_TIMEOUT = int(os.environ.get("TORRENT_TIMEOUT", "150"))
 UA = ("Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) "
       "AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36")
 
@@ -90,6 +93,64 @@ def javdb_search(code, cache):
         print(f"   ⚠️ JavDB {code} 失败: {e}")
     cache[code] = url  # None 也缓存，避免重复请求
     return url
+
+
+# ---------- BitTorrent 直抽（libtorrent，无需 RD） ----------
+
+def torrent_fetch_cover(view_link):
+    """下载 .torrent，从 swarm 只拉最小的图片文件。返回 bytes 或 None"""
+    import tempfile
+    m = re.search(r"/view/(\d+)", view_link or "")
+    if not m:
+        return None
+    try:
+        import libtorrent as lt
+    except ImportError:
+        print("   ⚠️ 无 libtorrent，跳过直抽")
+        return None
+    tmp_t = None
+    try:
+        status, raw = http_bytes(f"https://sukebei.nyaa.si/download/{m.group(1)}.torrent", timeout=25)
+        if status != 200 or len(raw) < 100:
+            return None
+        with tempfile.NamedTemporaryFile(suffix=".torrent", delete=False) as f:
+            f.write(raw)
+            tmp_t = f.name
+        info = lt.torrent_info(tmp_t)
+        fs = info.files()
+        imgs = [(i, fs.file_size(i), fs.file_path(i)) for i in range(fs.num_files())
+                if fs.file_path(i).lower().endswith(IMG_EXT) and 5000 < fs.file_size(i) < 2_000_000]
+        if not imgs:
+            return None
+        imgs.sort(key=lambda x: (not IMG_PREFER.search(x[2]), x[1]))
+        best = imgs[0][0]
+        with tempfile.TemporaryDirectory() as td:
+            ses = lt.session({"listen_interfaces": "0.0.0.0:6881", "upload_rate_limit": 10000})
+            h = ses.add_torrent({"ti": info, "save_path": td})
+            for i in range(fs.num_files()):
+                h.file_priority(i, 7 if i == best else 0)
+            t0 = time.time()
+            ok = False
+            while time.time() - t0 < TORRENT_TIMEOUT:
+                if h.status().progress >= 1:
+                    ok = True
+                    break
+                time.sleep(3)
+            ses.remove_torrent(h)
+            if not ok:
+                print(f"   ⏱ swarm 拉取超时 ({TORRENT_TIMEOUT}s)")
+                return None
+            with open(os.path.join(td, fs.file_path(best)), "rb") as f:
+                return f.read()
+    except Exception as e:
+        print(f"   ⚠️ BT 抽图失败: {e}")
+        return None
+    finally:
+        if tmp_t:
+            try:
+                os.unlink(tmp_t)
+            except OSError:
+                pass
 
 
 # ---------- Real-Debrid ----------
@@ -155,7 +216,37 @@ def rd_fetch_cover(info_hash, title):
     return None
 
 
-def push_cover(info_hash, content):
+# ---------- 图床 ----------
+
+def detect_ext(content):
+    if content[:3] == b"\xff\xd8\xff":
+        return ".jpg"
+    if content[:8] == b"\x89PNG\r\n\x1a\n":
+        return ".png"
+    if content[:4] == b"RIFF":
+        return ".webp"
+    return ".jpg"
+
+
+def catbox_upload(ih, content):
+    """catbox.moe 免鉴权图床。成功返回 URL，失败抛异常"""
+    boundary = "----pybound"
+    fname = ih[:8] + detect_ext(content)
+    pre = (f"--{boundary}\r\nContent-Disposition: form-data; name=\"reqtype\"\r\n\r\nfileupload\r\n"
+           f"--{boundary}\r\nContent-Disposition: form-data; name=\"fileToUpload\"; filename=\"{fname}\"\r\n"
+           f"Content-Type: image/jpeg\r\n\r\n").encode()
+    body = pre + content + f"\r\n--{boundary}--\r\n".encode()
+    req = urllib.request.Request(
+        "https://catbox.moe/user/api.php", data=body,
+        headers={"Content-Type": f"multipart/form-data; boundary={boundary}", "User-Agent": UA})
+    with urllib.request.urlopen(req, timeout=40) as r:
+        url = r.read().decode().strip()
+    if url.startswith("http"):
+        return url
+    raise ValueError(f"catbox 拒绝: {url[:100]}")
+
+
+def push_cover(ih, content):
     ext = ".jpg"
     raw = content[:3]
     if raw.startswith(b"\x89P"):
@@ -197,10 +288,30 @@ def main():
     # 优先处理 catalog 前排（高 seeders）
     todo.sort(key=lambda x: -x.get("seeders", 0))
     todo = todo[:COVER_BATCH]
-    print(f"🖼️ 待补封面 {len(todo)} 个（本轮上限 {COVER_BATCH}，RD 抽取上限 {RD_FETCH_MAX}）")
+    print(f"🖼️ 待补封面 {len(todo)} 个（本轮上限 {COVER_BATCH}；BT 直抽 {TORRENT_FETCH_MAX}，RD 兜底 {RD_FETCH_MAX}）")
 
-    rd_used = 0
-    done = javdb_done = rd_done = 0
+    rd_used = torrent_used = 0
+    javdb_done = rd_done = bt_done = 0
+
+    def mark_failed(it):
+        tries = int(it.get("cover_status", "failed:0").split(":")[-1]) + 1 if it.get("cover_status") else 1
+        it["cover_status"] = f"failed:{tries}" if tries < 2 else "failed:9"
+
+    def try_push(it, content, source):
+        nonlocal rd_done, bt_done
+        try:
+            # 有 COVERS_PAT 用 GitHub covers 仓库（自有、耐删），否则 catbox 免鉴权图床
+            it["poster"] = push_cover(it["infoHash"], content) if COVERS_PAT else catbox_upload(it["infoHash"], content)
+            it["cover_status"] = source
+            if source == "rd":
+                rd_done += 1
+            else:
+                bt_done += 1
+            print(f"✓ 已托管 ({len(content)//1024}KB, {source}): {it['poster']}")
+        except Exception as e:
+            mark_failed(it)
+            print(f"   ✗ 托管失败: {e}")
+
     for it in todo:
         ih = it["infoHash"]
         title = it.get("name", "")
@@ -213,37 +324,35 @@ def main():
                 it["cover_status"] = "javdb"
                 javdb_done += 1
                 print(f"✓ [{code}] JavDB 封面")
-        if not poster and RD_TOKEN and rd_used < RD_FETCH_MAX:
-            rd_used += 1
-            print(f"🧲 [{ih[:8]}] RD 抽图: {title[:40]}")
-            content = rd_fetch_cover(ih, title)
-            if content and COVERS_PAT:
-                try:
-                    it["poster"] = push_cover(ih, content)
-                    it["cover_status"] = "rd"
-                    rd_done += 1
-                    print(f"✓ 已推送 covers 仓库 ({len(content)//1024}KB)")
-                except Exception as e:
-                    it["cover_status"] = "failed:1"
-                    print(f"   ✗ 推送失败: {e}")
-            elif content:
-                it["cover_status"] = "failed:1"
-                print("   ✗ 缺 COVERS_PAT，无法托管")
+        # 1) libtorrent 直抽（免费，无需 RD）
+        if not poster and FETCH_VIA_TORRENT and torrent_used < TORRENT_FETCH_MAX:
+            torrent_used += 1
+            print(f"🧲 [{ih[:8]}] BT 抽图: {title[:40]}")
+            content = torrent_fetch_cover(it.get("link", ""))
+            if content:
+                try_push(it, content, "bt")
             else:
-                tries = int(it.get("cover_status", "failed:0").split(":")[-1]) + 1 if it.get("cover_status") else 1
-                it["cover_status"] = f"failed:{tries}" if tries < 2 else "failed:9"
+                mark_failed(it)
                 print("   ✗ 未抽到图")
-        elif not poster and not RD_TOKEN:
-            tries = int(it.get("cover_status", "failed:0").split(":")[-1]) + 1 if it.get("cover_status") else 1
-            it["cover_status"] = f"failed:{tries}" if tries < 2 else "failed:9"
+        # 2) RD 兜底（配了 RD_TOKEN 时）
+        if not it.get("poster") and RD_TOKEN and rd_used < RD_FETCH_MAX \
+                and it.get("cover_status", "").split(":")[0] == "failed":
+            rd_used += 1
+            print(f"☁️ [{ih[:8]}] RD 抽图: {title[:40]}")
+            content = rd_fetch_cover(ih, title)
+            if content:
+                try_push(it, content, "rd")
+            else:
+                mark_failed(it)
+                print("   ✗ RD 未取到")
         time.sleep(1)
 
     cat["updated_at"] = time.strftime("%Y-%m-%dT%H:%M:%S+00:00", time.gmtime())
     CATALOG_FILE.write_text(json.dumps(cat, ensure_ascii=False, indent=1), encoding="utf-8")
     CACHE_FILE.write_text(json.dumps(cache, ensure_ascii=False, indent=1), encoding="utf-8")
-    print(f"\n✅ 本轮封面: JavDB {javdb_done}，RD {rd_done}")
+    print(f"\n✅ 本轮封面: JavDB {javdb_done}，BT {bt_done}，RD {rd_done}")
     if not RD_TOKEN:
-        print("⚠️ 未设 RD_TOKEN，仅尝试 JavDB")
+        print("ℹ️ 未设 RD_TOKEN（BT 直抽失败的不重试 RD）")
     return 0
 
 

@@ -40,10 +40,16 @@ python3 scripts/catalog_manager.py remove-keyword 关键词
 
 ## 封面
 
-- 标题含番号（SSIS-950 / FC2-PPV-xxx 等）→ 自动匹配 JavDB 真封面
-- 其余条目 → Real-Debrid 抽取种子内 jpg，托管在 [sukebei-covers](https://github.com/kevinhfwang/sukebei-covers) 仓库
-- 需要仓库 Settings → Secrets 配置：`RD_TOKEN`（[real-debrid.com/apitoken](https://real-debrid.com/apitoken)）、`COVERS_PAT`（fine-grained token，仅 contents 读写 sukebei-covers）
-- 每 8 小时一轮补 40 个（RD 抽图上限 10 个），逐步补满
+三级自动补图（每 8 小时一轮，逐步补满）：
+
+1. **JavDB 真封面**：标题含番号（SSIS-950 / FC2-PPV-xxx 等）自动匹配
+2. **BitTorrent 直抽**（默认，零依赖零密钥）：Actions 装 `python3-libtorrent`，下 .torrent 后从 swarm 只拉种子内最小的图片文件（上传限速 10KB/s，即取即删）。约 1/6 的种子内含图片（写真集/合集类）
+3. **Real-Debrid 兜底**（可选）：配 `RD_TOKEN` secret 时，BT 抽不到的再用 RD 解
+
+图床：**默认 catbox.moe 免鉴权直传**（零配置）；想更耐删可配 `COVERS_PAT`（fine-grained token，contents 读写 [sukebei-covers](https://github.com/kevinhfwang/sukebei-covers)），有 PAT 时自动改用自有仓库托管
+
+- Secrets 全都不配也能跑：JavDB + BT 直抽 + catbox
+- 环境变量可调：`COVER_BATCH`（每轮补图数，默认 40）、`TORRENT_FETCH_MAX`（BT 直抽上限，默认 10）、`FETCH_VIA_TORRENT=0` 关闭 BT 直抽
 
 ## 注意
 

@@ -30,12 +30,15 @@ jobs:
       - name: Scrape RSS sources
         run: python scripts/scrape.py
 
-      - name: Fetch covers (JavDB / Real-Debrid)
+      - name: Install libtorrent (BT 直抽封面)
+        run: sudo apt-get update -qq && sudo apt-get install -y -qq python3-libtorrent
+
+      - name: Fetch covers (JavDB / BitTorrent / Real-Debrid)
         env:
           RD_TOKEN: ${{ secrets.RD_TOKEN }}
           COVERS_PAT: ${{ secrets.COVERS_PAT }}
           COVERS_REPO: kevinhfwang/sukebei-covers
-        run: python scripts/fetch_covers.py
+        run: /usr/bin/python3 scripts/fetch_covers.py
 
       - name: Commit catalog
         run: |
