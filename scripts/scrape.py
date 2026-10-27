@@ -194,6 +194,11 @@ def main():
             if prev:
                 it["first_seen"] = prev.get("first_seen", it["first_seen"])
                 it["keywords"] = sorted(set(prev.get("keywords", [])) | {keyword})
+                # 保留已抓取的封面/状态（RSS 描述里基本无图，重抓会覆盖为空）
+                if not it.get("poster") and prev.get("poster"):
+                    it["poster"] = prev["poster"]
+                if prev.get("cover_status"):
+                    it["cover_status"] = prev["cover_status"]
             else:
                 it["keywords"] = [keyword]
                 total_new += 1

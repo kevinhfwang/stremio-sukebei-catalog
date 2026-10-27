@@ -1,5 +1,5 @@
 {
- "updated_at": "2026-10-27T19:43:17.731796+00:00",
+ "updated_at": "2026-10-27T20:29:51+00:00",
  "config": {
   "feed_template": "https://sukebei.nyaa.si/?page=rss&q={keyword}&s=seeders&o=desc",
   "per_keyword_limit": 150,
@@ -5137,7 +5137,8 @@
    "first_seen": "2026-10-27T19:37:17.188841+00:00",
    "keywords": [
     "学生"
-   ]
+   ],
+   "cover_status": "failed:1"
   },
   "f8ebd1497feef3d122bb3636386046a2a4491e80": {
    "id": "f8ebd1497feef3d122bb3636386046a2a4491e80",
@@ -5152,7 +5153,8 @@
    "first_seen": "2026-10-27T19:37:17.188686+00:00",
    "keywords": [
     "学生"
-   ]
+   ],
+   "cover_status": "failed:1"
   },
   "1e06d8cc2aed2e6349e45ad95e0e39474a9017e8": {
    "id": "1e06d8cc2aed2e6349e45ad95e0e39474a9017e8",
@@ -5167,7 +5169,8 @@
    "first_seen": "2026-10-27T19:37:17.188882+00:00",
    "keywords": [
     "学生"
-   ]
+   ],
+   "cover_status": "failed:1"
   },
   "c8b337476555b2e7c7c23621be9a1ea2f4699f3f": {
    "id": "c8b337476555b2e7c7c23621be9a1ea2f4699f3f",
@@ -5177,12 +5180,13 @@
    "nyaa_category": "Real Life - Videos",
    "link": "https://sukebei.nyaa.si/view/4746670",
    "size": "5.1 GiB",
-   "poster": "",
+   "poster": "https://c0.jdbstatic.com/covers/1b/1B5XZn.jpg",
    "keyword": "学生",
    "first_seen": "2026-10-27T19:37:20.071832+00:00",
    "keywords": [
     "学生"
-   ]
+   ],
+   "cover_status": "javdb"
   },
   "883584f4d89f02f8669e69c9659d4a63d1e6dde8": {
    "id": "883584f4d89f02f8669e69c9659d4a63d1e6dde8",
@@ -5197,7 +5201,8 @@
    "first_seen": "2026-10-27T19:37:17.188874+00:00",
    "keywords": [
     "学生"
-   ]
+   ],
+   "cover_status": "failed:1"
   },
   "2f06798c682d27a8c0bf12ea394f6ff995aa192d": {
    "id": "2f06798c682d27a8c0bf12ea394f6ff995aa192d",
@@ -5212,7 +5217,8 @@
    "first_seen": "2026-10-27T19:37:17.189094+00:00",
    "keywords": [
     "学生"
-   ]
+   ],
+   "cover_status": "failed:1"
   },
   "de512ab600f603567bf0e60a3004d923eb75ee1d": {
    "id": "de512ab600f603567bf0e60a3004d923eb75ee1d",
@@ -5227,7 +5233,8 @@
    "first_seen": "2026-10-27T19:37:20.071691+00:00",
    "keywords": [
     "学生"
-   ]
+   ],
+   "cover_status": "failed:1"
   },
   "d66168f80f77a678ac042cda7cf86023e4079195": {
    "id": "d66168f80f77a678ac042cda7cf86023e4079195",
@@ -5237,12 +5244,13 @@
    "nyaa_category": "Real Life - Videos",
    "link": "https://sukebei.nyaa.si/view/4745209",
    "size": "5.1 GiB",
-   "poster": "",
+   "poster": "https://c0.jdbstatic.com/covers/wk/wKb4n.jpg",
    "keyword": "学生",
    "first_seen": "2026-10-27T19:37:17.189208+00:00",
    "keywords": [
     "学生"
-   ]
+   ],
+   "cover_status": "javdb"
   },
   "abbecacb258315fca020f6d22dd1dbaa46a06aaa": {
    "id": "abbecacb258315fca020f6d22dd1dbaa46a06aaa",
