@@ -289,6 +289,47 @@ def catbox_upload(ih, content):
     raise ValueError(f"catbox 拒绝: {url[:100]}")
 
 
+_THIS_REPO = os.environ.get("GITHUB_REPOSITORY", "kevinhfwang/stremio-sukebei-catalog")
+
+
+def _github_api(url, token, method="GET", data=None, raw=None, ctype="application/json"):
+    req = urllib.request.Request(
+        url, method=method,
+        data=raw if raw is not None else (json.dumps(data).encode() if data is not None else None),
+        headers={"Authorization": f"Bearer {token}", "Accept": "application/vnd.github+json",
+                 "Content-Type": ctype, "User-Agent": UA})
+    try:
+        with urllib.request.urlopen(req, timeout=30) as r:
+            body = r.read()
+            return r.status, (json.loads(body) if ctype == "application/json" and body else body)
+    except urllib.error.HTTPError as e:
+        return e.code, e.read().decode(errors="replace")[:200]
+
+
+def gh_release_upload(ih, content):
+    """传到本仓库 Releases（Actions 里自动有 GITHUB_TOKEN，零 secret）。幂等：同名 asset 直接复用"""
+    token = os.environ.get("GITHUB_TOKEN") or os.environ.get("GH_TOKEN")
+    if not token:
+        raise ValueError("无 GITHUB_TOKEN")
+    name = ih[:8] + detect_ext(content)
+    base = f"https://api.github.com/repos/{_THIS_REPO}"
+    status, rel = _github_api(f"{base}/releases/tags/covers", token)
+    if status == 404:
+        status, rel = _github_api(f"{base}/releases", token, method="POST",
+                                  data={"tag_name": "covers", "name": "covers", "body": "海报图床（自动上传，勿删）"})
+    if not isinstance(rel, dict) or "id" not in rel:
+        raise ValueError(f"release 不可用: {status} {str(rel)[:120]}")
+    for a in rel.get("assets", []):
+        if a.get("name") == name:
+            return f"https://github.com/{_THIS_REPO}/releases/download/covers/{name}"
+    up = f"https://uploads.github.com/repos/{_THIS_REPO}/releases/{rel['id']}/assets?name={name}"
+    status, resp = _github_api(up, token, method="POST", raw=content,
+                               ctype="application/octet-stream")
+    if isinstance(resp, dict) and resp.get("browser_download_url"):
+        return resp["browser_download_url"]
+    raise ValueError(f"asset 上传失败: {status} {str(resp)[:120]}")
+
+
 def push_cover(ih, content):
     ext = ".jpg"
     raw = content[:3]
@@ -296,10 +337,10 @@ def push_cover(ih, content):
         ext = ".png"
     elif raw.startswith(b"RIFF"):
         ext = ".webp"
-    path = f"{info_hash}{ext}"
+    path = f"{ih}{ext}"
     import base64
     api = f"https://api.github.com/repos/{COVERS_REPO}/contents/{path}"
-    body = {"message": f"cover: {info_hash}", "content": base64.b64encode(content).decode(),
+    body = {"message": f"cover: {ih}", "content": base64.b64encode(content).decode(),
             "branch": "main"}
     req = urllib.request.Request(api, data=json.dumps(body).encode(),
                                  headers={"Authorization": f"Bearer {COVERS_PAT}",
@@ -343,8 +384,15 @@ def main():
     def try_push(it, content, source):
         nonlocal rd_done, bt_done
         try:
-            # 有 COVERS_PAT 用 GitHub covers 仓库（自有、耐删），否则 catbox 免鉴权图床
-            it["poster"] = push_cover(it["infoHash"], content) if COVERS_PAT else catbox_upload(it["infoHash"], content)
+            if COVERS_PAT:
+                # 自有 covers 仓库（配了 COVERS_PAT 时最耐删）
+                it["poster"] = push_cover(it["infoHash"], content)
+            else:
+                try:
+                    it["poster"] = catbox_upload(it["infoHash"], content)
+                except Exception as e1:
+                    print(f"   ⚠️ catbox 失败（{e1}），改传 GitHub Release")
+                    it["poster"] = gh_release_upload(it["infoHash"], content)
             it["cover_status"] = source
             if source == "rd":
                 rd_done += 1
