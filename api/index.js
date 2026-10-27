@@ -121,20 +121,34 @@ async function rdResolve(hash, key) {
       rdIdCache.set(lk, e);
     }
     const info = await rdApi(`/torrents/info/${e.id}`, key);
-    if (
-      info &&
-      info.status === "downloaded" &&
-      Array.isArray(info.links) &&
-      info.links.length
-    ) {
-      const vids = info.links.filter((l) =>
-        /\.(mkv|mp4|avi|mov|wmv|ts|m4v|mpg|webm)(\?|#|$)/i.test(l)
-      );
-      const pick = vids[0] || info.links[0];
+    if (info && info.status === "downloaded" && Array.isArray(info.links) && info.links.length) {
+      // links[] 与 files[] 中 selected=true 的条目一一对应（RD 直链 URL 无后缀，必须靠 files[].path 判断）
+      const files = Array.isArray(info.files) ? info.files : [];
+      const videoExt = /\.(mkv|mp4|avi|mov|wmv|ts|m4v|mpg|webm)$/i;
+      const selIdx = files
+        .map((f, i) => (f && f.selected ? i : -1))
+        .filter((i) => i >= 0);
+      let pick = null;
+      let pickName = info.filename || "";
+      let bestBytes = -1;
+      let li = 0;
+      for (const i of selIdx) {
+        const link = info.links[li];
+        li++;
+        if (!link) break;
+        const path = files[i].path || "";
+        const bytes = files[i].bytes || 0;
+        if (videoExt.test(path) && bytes > bestBytes) {
+          bestBytes = bytes;
+          pick = link;
+          pickName = path.split("/").pop() || path;
+        }
+      }
+      if (!pick) return null; // 云端里没有视频文件，退回 P2P
       return {
         name: "RD ☁️ 秒播",
         url: pick,
-        title: `${info.filename || ""}\n☁️ Real-Debrid 云端直链`,
+        title: `${pickName}\n☁️ Real-Debrid 云端直链`,
       };
     }
     return null; // RD 云端还在下载，退回 infoHash
