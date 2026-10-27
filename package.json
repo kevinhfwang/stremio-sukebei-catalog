@@ -1,0 +1,13 @@
+{
+  "name": "stremio-sukebei-catalog",
+  "version": "1.0.0",
+  "description": "Stremio 精选 Catalog 插件：RSS 定时抓取 + 静态 catalog.json，配合 Real-Debrid 秒播",
+  "main": "api/index.js",
+  "license": "MIT",
+  "dependencies": {
+    "stremio-addon-sdk": "^1.6.10"
+  },
+  "engines": {
+    "node": ">=18"
+  }
+}
