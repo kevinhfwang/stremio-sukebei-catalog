@@ -16,8 +16,9 @@ RSS 定时抓取 → 静态 catalog.json（GitHub 托管）→ Vercel serverless
 
 ### 2. Vercel（插件端）
 1. [vercel.com/new](https://vercel.com/new) 导入本仓库（Framework: Other，零配置，`api/` + `vercel.json` 自动识别）
-2. 部署后得到 `https://<project>.vercel.app`，Stremio 里添加该 URL 即安装
-3. Stremio 内登录 Real-Debrid 后，infoHash 资源直接秒播
+2. 打开部署地址 → 进入**安装页**：粘贴 Real-Debrid API key（[real-debrid.com/apitoken](https://real-debrid.com/apitoken)）→ 点「生成安装链接」→ 「在 Stremio 中打开」
+3. 不填 key 直接装 = 裸 infoHash 模式（P2P，或依赖 Stremio 客户端自己登录的 RD）
+4. 已配置 RD 的 manifest 里 stream 直接返回 **RD 云端直链（秒播）**，RD 云端还没有的种会自动转离线任务并退回 P2P 备用
 
 ### 3. 本地调试
 ```bash
