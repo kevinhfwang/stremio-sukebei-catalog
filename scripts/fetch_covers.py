@@ -30,10 +30,22 @@ COVERS_REPO = os.environ.get("COVERS_REPO", "kevinhfwang/sukebei-covers")
 COVER_BATCH = int(os.environ.get("COVER_BATCH", "40"))
 RD_FETCH_MAX = int(os.environ.get("RD_FETCH_MAX", "10"))
 FETCH_VIA_TORRENT = os.environ.get("FETCH_VIA_TORRENT", "1") == "1"
-TORRENT_FETCH_MAX = int(os.environ.get("TORRENT_FETCH_MAX", "10"))
-TORRENT_TIMEOUT = int(os.environ.get("TORRENT_TIMEOUT", "150"))
+TORRENT_FETCH_MAX = int(os.environ.get("TORRENT_FETCH_MAX", "6"))
+TORRENT_TIMEOUT = int(os.environ.get("TORRENT_TIMEOUT", "240"))
 UA = ("Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) "
       "AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36")
+
+# 公共 tracker：magnet 不带 tracker 时只靠 DHT，冷种拉不到 peer
+TRACKERS = [
+    "udp://tracker.opentrackr.org:1337/announce",
+    "udp://open.stealth.si:80/announce",
+    "udp://exodus.desync.com:6969/announce",
+    "udp://tracker.tiny-vps.com:6969/announce",
+    "udp://open.demonii.com:1337/announce",
+    "udp://tracker.dler.org:6969/announce",
+    "udp://tracker.moeking.me:6969/announce",
+    "udp://tracker.torrent.eu.org:451/announce",
+]
 
 CODE_RE = re.compile(r"\b([A-Z]{2,8}[- ]?(?:PPV[- ])?\d{2,6})\b")
 CODE_BLACKLIST = re.compile(
@@ -125,10 +137,12 @@ def torrent_fetch_cover(view_link, ih):
                         h = ses.add_torrent({"ti": info, "save_path": td})
                 except Exception:
                     info = None
-            # 2) magnet + DHT 拿元数据（绕开 nyaa 对云 IP 的 HTTP 封锁）
+            # 2) magnet + DHT + 公共 tracker 拿元数据（绕开 nyaa 对云 IP 的 HTTP 封锁）
             if info is None:
                 try:
-                    h = lt.add_magnet_uri(ses, f"magnet:?xt=urn:btih:{ih}", {"save_path": td})
+                    magnet = f"magnet:?xt=urn:btih:{ih}" + "".join(
+                        f"&tr={urllib.parse.quote(t)}" for t in TRACKERS)
+                    h = lt.add_magnet_uri(ses, magnet, {"save_path": td})
                     t0 = time.time()
                     while time.time() - t0 < 90:
                         if h.has_metadata():
@@ -159,6 +173,11 @@ def torrent_fetch_cover(view_link, ih):
                 if h.status().progress >= 1:
                     ok = True
                     break
+                if int(time.time() - t0) % 45 < 3:
+                    try:
+                        h.force_reannounce()
+                    except Exception:
+                        pass
                 time.sleep(3)
             ses.remove_torrent(h)
             if not ok:
