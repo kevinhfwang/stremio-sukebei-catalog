@@ -138,7 +138,7 @@ def torrent_fetch_cover(view_link, ih):
                         print("   ⏱ DHT 元数据超时 (90s)")
                         ses.remove_torrent(h)
                         return None
-                    info = h.get_torrent_file()
+                    info = h.torrent_file() if hasattr(h, "torrent_file") else h.get_torrent_file()
                 except Exception as e:
                     print(f"   ⚠️ magnet 失败: {e}")
                     return None
