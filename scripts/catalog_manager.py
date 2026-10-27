@@ -77,7 +77,7 @@ def find_keyword(cfg, key):
 
 def print_config(cfg):
     print(f"\n主数据源模板: {cfg['feed_template']}")
-    print(f"限制: 每分类 Top {cfg.get('per_keyword_limit',150)}，{cfg.get('pages_per_keyword',2)} 页/关键词")
+    print(f"限制: 每分类 Top {cfg.get('per_keyword_limit',150)}（{(cfg.get('keyword_variants') or ['','&c=2_1','&c=2_2'])} 共 {len(cfg.get('keyword_variants') or ['','&c=2_1','&c=2_2'])} 个 URL 变体）")
     print(f"关键词 {len(cfg['keywords'])} 个：")
     for i, k in enumerate(cfg["keywords"], 1):
         print(f"  {i:2d}. {k['keyword']:<10} slug={k['slug']:<12} {k.get('catalog_name','')}")
