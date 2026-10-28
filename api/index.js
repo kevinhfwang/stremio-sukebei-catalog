@@ -83,7 +83,7 @@ async function rdApi(path, key, opts = {}) {
   return j;
 }
 
-// 返回 RD 直链 stream 对象，未就绪/失败返回 null（调用方退回 infoHash）
+// 返回 {stream, error}：成功给直链 stream，失败给可读原因（显示在 P2P 源副标题里便于排查）
 async function rdResolve(hash, key) {
   try {
     const lk = hash.toLowerCase();
@@ -104,24 +104,33 @@ async function rdResolve(hash, key) {
           });
         } catch (_) {}
       } catch (err) {
+        if (err.status === 401 || err.status === 403) {
+          return { error: `RD key 无效或无权限(HTTP ${err.status})` };
+        }
         if (err.status === 400) {
           // 已添加过：从列表按 hash 找回 id
           const list = await rdApi("/torrents?limit=100", key);
           const found = (list || []).find(
             (t) => (t.hash || "").toLowerCase() === lk
           );
-          if (!found) return null;
+          if (!found) return { error: "RD 里找不到该种子(HTTP 400)" };
           id = found.id;
         } else {
-          return null;
+          return { error: `addMagnet 失败: HTTP ${err.status}` };
         }
       }
-      if (!id) return null;
+      if (!id) return { error: "RD 未返回任务 id" };
       e = { id, at: Date.now() };
       rdIdCache.set(lk, e);
     }
     const info = await rdApi(`/torrents/info/${e.id}`, key);
-    if (info && info.status === "downloaded" && Array.isArray(info.links) && info.links.length) {
+    if (!info) return { error: "RD 任务信息为空" };
+    if (info.status !== "downloaded") {
+      return { error: `RD 云端状态=${info.status}（下载完成后重试）` };
+    }
+    if (!Array.isArray(info.links) || !info.links.length) {
+      return { error: "RD 云端无直链" };
+    }
       // links[] 与 files[] 中 selected=true 的条目一一对应（RD 直链 URL 无后缀，必须靠 files[].path 判断）
       const files = Array.isArray(info.files) ? info.files : [];
       const videoExt = /\.(mkv|mp4|avi|mov|wmv|ts|m4v|mpg|webm)$/i;
@@ -144,29 +153,34 @@ async function rdResolve(hash, key) {
           pickName = path.split("/").pop() || path;
         }
       }
-      if (!pick) return null; // 云端里没有视频文件，退回 P2P
+      if (!pick) return { error: "云端里没选到视频文件" };
       return {
-        name: "RD ☁️ 秒播",
-        url: pick,
-        title: `${pickName}\n☁️ Real-Debrid 云端直链`,
+        stream: {
+          name: "RD ☁️ 秒播",
+          url: pick,
+          title: `${pickName}\n☁️ Real-Debrid 云端直链`,
+        },
       };
-    }
-    return null; // RD 云端还在下载，退回 infoHash
-  } catch (_) {
-    return null;
+    } catch (err) {
+    return { error: `RD 请求异常: ${(err && err.message) || err}` };
   }
 }
 
 async function buildStreams(item, conf) {
   const streams = [];
+  let rdNote = "";
   if (conf && conf.rd) {
     const rd = await rdResolve(item.infoHash, conf.rd);
-    if (rd) streams.push(rd);
+    if (rd.stream) {
+      streams.push(rd.stream);
+    } else {
+      rdNote = `⚠️ RD未生效：${rd.error || "未知原因"}\n`;
+    }
   }
   streams.push({
     name: streams.length ? "P2P 备用" : "P2P",
     infoHash: item.infoHash,
-    title: `${item.name}\n👤 ${item.seeders} seeders${
+    title: `${rdNote}${item.name}\n👤 ${item.seeders} seeders${
       item.size ? " · " + item.size : ""
     }`,
   });
