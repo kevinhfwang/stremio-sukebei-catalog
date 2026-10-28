@@ -156,24 +156,29 @@ async function rdResolve(hash, key) {
       const streams = [];
       for (let n = 0; n < picks.length; n++) {
         const v = picks[n];
-        const fileName = v.path.split("/").pop() || v.path;
-        // WMV/TS 在多数设备上只出声不出画，标题里警告
-        let warn = "";
-        if (/\.(wmv|ts)$/i.test(fileName)) warn = "\n⚠️ 该格式(WMV/TS)部分设备无画面，P2P 源可换其他版本";
         // torrents/info 的 links 还不是最终直链，必须再过 /unrestrict/link 换 CDN 地址
         const un = await rdApi("/unrestrict/link", key, {
           method: "POST",
           body: new URLSearchParams({ link: v.link }),
         });
-        if (un && un.download) {
-          streams.push({
-            name: n === 0 ? "RD ☁️ 秒播" : `RD ☁️ #${n + 1}`,
-            url: un.download,
-            title: `${fileName}\n☁️ Real-Debrid 云端直链${warn}`,
-          });
+        if (!un || !un.download) continue;
+        // 以 RD 自己报告的真实文件名为准（files[].path 与 links[] 对位可能错位），
+        // 非视频（rar/zip 伪装等）直接踢出
+        const fileName = (un.filename || v.path.split("/").pop() || "").trim();
+        if (!videoExt.test(fileName)) {
+          console.log(`[rd] 剔除非视频文件: ${fileName}`);
+          continue;
         }
+        // WMV/TS 在多数设备上只出声不出画，标题里警告
+        let warn = "";
+        if (/\.(wmv|ts)$/i.test(fileName)) warn = "\n⚠️ 该格式(WMV/TS)部分设备无画面，P2P 源可换其他版本";
+        streams.push({
+          name: streams.length === 0 ? "RD ☁️ 秒播" : `RD ☁️ #${streams.length + 1}`,
+          url: un.download,
+          title: `${fileName}\n☁️ Real-Debrid 云端直链${warn}`,
+        });
       }
-      if (!streams.length) return { error: "unrestrict 未返回直链" };
+      if (!streams.length) return { error: "包内文件不是可播视频（rar/zip 压缩包无法直接播放）" };
       return { streams };
     } catch (err) {
     return { error: `RD 请求异常: ${(err && err.message) || err}` };
@@ -228,7 +233,7 @@ function getBuilder() {
       const keywords = (cat.config && cat.config.keywords) || [];
       const manifest = {
         id: "com.kevinhfwang.sukebei-catalog",
-        version: "1.1.4",
+        version: "1.1.5",
         name: "Sukebei 精选",
         description:
           "RSS 精选 Top（每 8 小时更新）· 安装页可配置 Real-Debrid key 云端秒播，未配置则返回 infoHash 走 P2P/客户端 RD",
