@@ -83,6 +83,22 @@ async function rdApi(path, key, opts = {}) {
   return j;
 }
 
+// 关键词集合：英文/数字词 + 中日文二字组，用于文件名近似匹配
+function kwSet(name) {
+  const s = (name || "").toLowerCase().replace(/\.[a-z0-9]{2,5}$/i, "");
+  const words = s.match(/[a-z0-9]{2,}/g) || [];
+  const grams = [];
+  for (const seg of s.match(/[぀-ヿ㐀-䶿一-鿿]+/g) || []) {
+    for (let i = 0; i < seg.length - 1; i++) grams.push(seg.slice(i, i + 2));
+  }
+  return new Set(words.concat(grams));
+}
+function kwOverlap(a, b) {
+  let n = 0;
+  for (const t of a) { if (b.has(t)) n++; }
+  return n;
+}
+
 // 返回 {streams, error}：成功给直链数组，失败给可读原因（显示在 P2P 源副标题里便于排查）
 async function rdResolve(hash, key) {
   try {
@@ -123,23 +139,27 @@ async function rdResolve(hash, key) {
         await new Promise((r) => setTimeout(r, 2000));
         meta = await rdApi(`/torrents/info/${e.id}`, key);
       }
-      // 视频排序：与种子同名（去扩展名的 basename 前缀匹配）优先，其余按大小
+      // 匹配：同名（前缀）优先 > 关键词近似（二字组/单词重叠≥2）> 不匹配则跳过 RD
       const baseName = (p) => {
         const b = (p || "").split("/").pop();
         return b.replace(/\.[a-z0-9]{2,5}$/i, "");
       };
       const tname = baseName(meta && meta.filename);
-      const score = (f) => {
-        const bn = baseName(f.path);
-        return tname && (bn === tname || bn.startsWith(tname)) ? 0 : 1;
-      };
-      const _vids = ((meta && meta.files) || [])
+      const tkw = kwSet(tname);
+      const ranked = ((meta && meta.files) || [])
         .filter((f) => f.path && _vext.test(f.path))
-        .sort((a, b) => (score(a) - score(b)) || ((b.bytes || 0) - (a.bytes || 0)));
-      // 只选与种子同名的视频文件；没有同名视频则完全不勾选（不耗 RD 流量，走 P2P）
-      const wantIds = _vids.filter((f) => score(f) === 0).slice(0, 6).map((f) => String(f.id));
+        .map((f) => {
+          const bn = baseName(f.path);
+          if (tname && (bn === tname || bn.startsWith(tname))) return { f, tier: 0, ov: 1e9 };
+          const ov = kwOverlap(kwSet(bn), tkw);
+          return { f, tier: ov >= 2 ? 1 : 2, ov };
+        })
+        .filter((x) => x.tier < 2)
+        .sort((a, b) => (a.tier - b.tier) || (b.ov - a.ov) || ((b.f.bytes || 0) - (a.f.bytes || 0)));
+      // 只勾选匹配到的视频（最多6个，多个全列在源列表）
+      const wantIds = ranked.slice(0, 6).map((x) => String(x.f.id));
       if (!wantIds.length) {
-        return { error: "包内没有与种子同名的视频，已跳过 RD 下载（请用 P2P 源）" };
+        return { error: "包内没有同名/关键词匹配的视频，已跳过 RD 下载（请用 P2P 源）" };
       }
       try {
         await rdApi(`/torrents/selectFiles/${e.id}`, key, {
@@ -162,24 +182,27 @@ async function rdResolve(hash, key) {
     } else {
       info = await rdApi(`/torrents/info/${e.id}`, key);
       if (!info) return { error: "RD 任务信息为空" };
-      // 已下载完成但勾选的是全文件（含广告垃圾）：删除重加为仅视频（RD 按 hash 缓存，秒完成）
+      // 匹配：同名 > 关键词近似 > 不匹配（不匹配则删除重加后空选，不再耗流量）
       const baseName = (p) => {
         const b = (p || "").split("/").pop();
         return b.replace(/\.[a-z0-9]{2,5}$/i, "");
       };
       const tname = baseName(info.filename);
-      const score = (f) => {
-        const bn = baseName(f.path);
-        return tname && (bn === tname || bn.startsWith(tname)) ? 0 : 1;
-      };
-      const _vidsNow = ((info.files || []))
+      const tkw = kwSet(tname);
+      const ranked = ((info.files || []))
         .filter((f) => f.path && _vext.test(f.path))
-        .sort((a, b) => (score(a) - score(b)) || ((b.bytes || 0) - (a.bytes || 0)));
-      // 只选与种子同名的视频（无同名则不重加，不打扰已有任务）
-      const wantNow = _vidsNow.filter((f) => score(f) === 0).slice(0, 6).map((f) => String(f.id)).sort().join(",");
+        .map((f) => {
+          const bn = baseName(f.path);
+          if (tname && (bn === tname || bn.startsWith(tname))) return { f, tier: 0, ov: 1e9 };
+          const ov = kwOverlap(kwSet(bn), tkw);
+          return { f, tier: ov >= 2 ? 1 : 2, ov };
+        })
+        .filter((x) => x.tier < 2)
+        .sort((a, b) => (a.tier - b.tier) || (b.ov - a.ov) || ((b.f.bytes || 0) - (a.f.bytes || 0)));
+      const wantNow = ranked.slice(0, 6).map((x) => String(x.f.id)).sort().join(",");
       const curNow = ((info.files || []).filter((f) => f.selected).map((f) => String(f.id))).sort().join(",");
       const multiFile = ((info.files || []).filter((f) => f.selected).length > 1);
-      if (info.status === "downloaded" && multiFile && wantNow && wantNow !== curNow) {
+      if (info.status === "downloaded" && multiFile && wantNow !== curNow) {
         console.log(`[rd] 全选任务改仅视频，删除重加: ${lk.slice(0, 8)}`);
         try { await rdApi(`/torrents/delete/${e.id}`, key, { method: "DELETE" }); } catch (_) {}
         rdIdCache.delete(lk);
@@ -219,7 +242,28 @@ async function rdResolve(hash, key) {
       }
       if (!vids.length) return { error: "云端里没选到视频文件" };
       // 大包按大小降序列出，每个视频文件各给一个源，便于定位/挑选
-      vids.sort((a, b) => b.bytes - a.bytes);
+      // 同名 > 关键词重叠 > 大小
+      {
+        const baseName = (p) => {
+          const b = (p || "").split("/").pop();
+          return b.replace(/\.[a-z0-9]{2,5}$/i, "");
+        };
+        const tnm = baseName(info.filename);
+        const tkw = kwSet(tnm);
+        const rank = new Map();
+        for (const v of vids) {
+          const bn = baseName(v.path);
+          if (tnm && (bn === tnm || bn.startsWith(tnm))) rank.set(v, [0, 1e9]);
+          else {
+            const ov = kwOverlap(kwSet(bn), tkw);
+            rank.set(v, [ov >= 2 ? 1 : 2, ov]);
+          }
+        }
+        vids.sort((a, b) => {
+          const ra = rank.get(a), rb = rank.get(b);
+          return (ra[0] - rb[0]) || (rb[1] - ra[1]) || (b.bytes - a.bytes);
+        });
+      }
       const picks = vids.slice(0, 6);
       const streams = [];
       for (let n = 0; n < picks.length; n++) {
@@ -309,7 +353,7 @@ function getBuilder() {
       const keywords = (cat.config && cat.config.keywords) || [];
       const manifest = {
         id: "com.kevinhfwang.sukebei-catalog",
-        version: "1.2.1",
+        version: "1.2.2",
         name: "Sukebei 精选",
         description:
           "RSS 精选 Top（每 8 小时更新）· 安装页可配置 Real-Debrid key 云端秒播，未配置则返回 infoHash 走 P2P/客户端 RD",
