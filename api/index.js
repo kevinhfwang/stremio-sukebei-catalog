@@ -139,7 +139,7 @@ async function rdResolve(hash, key) {
         await new Promise((r) => setTimeout(r, 2000));
         meta = await rdApi(`/torrents/info/${e.id}`, key);
       }
-      // 匹配：同名（前缀）优先 > 关键词近似（二字组/单词重叠≥2）> 不匹配则跳过 RD
+      // 匹配：同名 > 关键词近似（二字组/单词重叠≥2）> 大文件兜底（≥100MB）> 跳过
       const baseName = (p) => {
         const b = (p || "").split("/").pop();
         return b.replace(/\.[a-z0-9]{2,5}$/i, "");
@@ -152,12 +152,13 @@ async function rdResolve(hash, key) {
           const bn = baseName(f.path);
           if (tname && (bn === tname || bn.startsWith(tname))) return { f, tier: 0, ov: 1e9 };
           const ov = kwOverlap(kwSet(bn), tkw);
-          return { f, tier: ov >= 2 ? 1 : 2, ov };
+          if (ov >= 2) return { f, tier: 1, ov };
+          return { f, tier: (f.bytes || 0) >= 104857600 ? 2 : 3, ov };
         })
-        .filter((x) => x.tier < 2)
+        .filter((x) => x.tier < 3)
         .sort((a, b) => (a.tier - b.tier) || (b.ov - a.ov) || ((b.f.bytes || 0) - (a.f.bytes || 0)));
-      // 只勾选匹配到的视频（最多6个，多个全列在源列表）
-      const wantIds = ranked.slice(0, 6).map((x) => String(x.f.id));
+      // 只勾选匹配到的视频（最多15个，多个全列在源列表）
+      const wantIds = ranked.slice(0, 15).map((x) => String(x.f.id));
       if (!wantIds.length) {
         return { error: "包内没有同名/关键词匹配的视频，已跳过 RD 下载（请用 P2P 源）" };
       }
@@ -195,11 +196,12 @@ async function rdResolve(hash, key) {
           const bn = baseName(f.path);
           if (tname && (bn === tname || bn.startsWith(tname))) return { f, tier: 0, ov: 1e9 };
           const ov = kwOverlap(kwSet(bn), tkw);
-          return { f, tier: ov >= 2 ? 1 : 2, ov };
+          if (ov >= 2) return { f, tier: 1, ov };
+          return { f, tier: (f.bytes || 0) >= 104857600 ? 2 : 3, ov };
         })
-        .filter((x) => x.tier < 2)
+        .filter((x) => x.tier < 3)
         .sort((a, b) => (a.tier - b.tier) || (b.ov - a.ov) || ((b.f.bytes || 0) - (a.f.bytes || 0)));
-      const wantNow = ranked.slice(0, 6).map((x) => String(x.f.id)).sort().join(",");
+      const wantNow = ranked.slice(0, 15).map((x) => String(x.f.id)).sort().join(",");
       const curNow = ((info.files || []).filter((f) => f.selected).map((f) => String(f.id))).sort().join(",");
       const multiFile = ((info.files || []).filter((f) => f.selected).length > 1);
       if (info.status === "downloaded" && multiFile && wantNow !== curNow) {
@@ -256,7 +258,8 @@ async function rdResolve(hash, key) {
           if (tnm && (bn === tnm || bn.startsWith(tnm))) rank.set(v, [0, 1e9]);
           else {
             const ov = kwOverlap(kwSet(bn), tkw);
-            rank.set(v, [ov >= 2 ? 1 : 2, ov]);
+            if (ov >= 2) rank.set(v, [1, ov]);
+            else rank.set(v, [(v.bytes || 0) >= 104857600 ? 2 : 3, ov]);
           }
         }
         vids.sort((a, b) => {
@@ -264,7 +267,7 @@ async function rdResolve(hash, key) {
           return (ra[0] - rb[0]) || (rb[1] - ra[1]) || (b.bytes - a.bytes);
         });
       }
-      const picks = vids.slice(0, 6);
+      const picks = vids.slice(0, 15);
       const streams = [];
       for (let n = 0; n < picks.length; n++) {
         const v = picks[n];
@@ -353,7 +356,7 @@ function getBuilder() {
       const keywords = (cat.config && cat.config.keywords) || [];
       const manifest = {
         id: "com.kevinhfwang.sukebei-catalog",
-        version: "1.2.2",
+        version: "1.2.3",
         name: "Sukebei 精选",
         description:
           "RSS 精选 Top（每 8 小时更新）· 安装页可配置 Real-Debrid key 云端秒播，未配置则返回 infoHash 走 P2P/客户端 RD",
