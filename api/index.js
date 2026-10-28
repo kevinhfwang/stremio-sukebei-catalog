@@ -123,6 +123,32 @@ async function rdResolve(hash, key) {
       e = { id, at: Date.now() };
       rdIdCache.set(lk, e);
     }
+    const info0 = await rdApi(`/torrents/info/${e.id}`, key);
+    if (!info0) return { error: "RD 任务信息为空" };
+    // 等元数据列出文件（新 magnet 可能还在 magnet_error）
+    let meta = info0;
+    for (let i = 0; i < 5 && !((meta.files || []).length); i++) {
+      await new Promise((r) => setTimeout(r, 2000));
+      meta = await rdApi(`/torrents/info/${e.id}`, key);
+      if (!meta) break;
+    }
+    // 只勾选视频文件（按大小前 6），让 RD 云端跳过广告垃圾，也避免服务端整包打 rar
+    const _vext = /\.(mkv|mp4|avi|mov|wmv|ts|m4v|mpg|webm)$/i;
+    const _vids = ((meta && meta.files) || [])
+      .filter((f) => f.path && _vext.test(f.path))
+      .sort((a, b) => (b.bytes || 0) - (a.bytes || 0));
+    const wantIds = _vids.slice(0, 6).map((f) => String(f.id));
+    const curSel = (((meta && meta.files) || []).filter((f) => f.selected).map((f) => String(f.id))).sort().join(",");
+    if (wantIds.length && wantIds.slice().sort().join(",") !== curSel) {
+      try {
+        await rdApi(`/torrents/selectFiles/${e.id}`, key, {
+          method: "POST",
+          body: new URLSearchParams({ files: wantIds.join(",") }),
+        });
+        console.log(`[rd] 仅勾选视频文件: ${wantIds.join(",")}`);
+        await new Promise((r) => setTimeout(r, 1500));
+      } catch (_) {}
+    }
     const info = await rdApi(`/torrents/info/${e.id}`, key);
     if (!info) return { error: "RD 任务信息为空" };
     if (info.status !== "downloaded") {
@@ -240,7 +266,7 @@ function getBuilder() {
       const keywords = (cat.config && cat.config.keywords) || [];
       const manifest = {
         id: "com.kevinhfwang.sukebei-catalog",
-        version: "1.1.6",
+        version: "1.1.7",
         name: "Sukebei 精选",
         description:
           "RSS 精选 Top（每 8 小时更新）· 安装页可配置 Real-Debrid key 云端秒播，未配置则返回 infoHash 走 P2P/客户端 RD",
