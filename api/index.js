@@ -154,10 +154,16 @@ async function rdResolve(hash, key) {
         }
       }
       if (!pick) return { error: "云端里没选到视频文件" };
+      // torrents/info 的 links 还不是最终直链，必须再过 /unrestrict/link 换 CDN 地址
+      const un = await rdApi("/unrestrict/link", key, {
+        method: "POST",
+        body: new URLSearchParams({ link: pick }),
+      });
+      if (!un || !un.download) return { error: "unrestrict 未返回直链" };
       return {
         stream: {
           name: "RD ☁️ 秒播",
-          url: pick,
+          url: un.download,
           title: `${pickName}\n☁️ Real-Debrid 云端直链`,
         },
       };
@@ -214,7 +220,7 @@ function getBuilder() {
       const keywords = (cat.config && cat.config.keywords) || [];
       const manifest = {
         id: "com.kevinhfwang.sukebei-catalog",
-        version: "1.1.1",
+        version: "1.1.2",
         name: "Sukebei 精选",
         description:
           "RSS 精选 Top（每 8 小时更新）· 安装页可配置 Real-Debrid key 云端秒播，未配置则返回 infoHash 走 P2P/客户端 RD",
