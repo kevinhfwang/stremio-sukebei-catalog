@@ -162,23 +162,30 @@ async function rdResolve(hash, key) {
           body: new URLSearchParams({ link: v.link }),
         });
         if (!un || !un.download) continue;
-        // 以 RD 自己报告的真实文件名为准（files[].path 与 links[] 对位可能错位），
-        // 非视频（rar/zip 伪装等）直接踢出
+        // 以 RD 自己报告的真实文件名为准（files[].path 与 links[] 对位可能错位）
         const fileName = (un.filename || v.path.split("/").pop() || "").trim();
-        if (!videoExt.test(fileName)) {
+        const isVideo = videoExt.test(fileName);
+        const isPacked = /\.(rar|zip|7z)$/i.test(fileName);
+        if (!isVideo && !isPacked) {
           console.log(`[rd] 剔除非视频文件: ${fileName}`);
           continue;
         }
-        // WMV/TS 在多数设备上只出声不出画，标题里警告
         let warn = "";
-        if (/\.(wmv|ts)$/i.test(fileName)) warn = "\n⚠️ 该格式(WMV/TS)部分设备无画面，P2P 源可换其他版本";
+        let prefix = "";
+        if (isPacked) {
+          // RD 服务端把敏感资源重打包成 rar（规避审查），内容是真视频但 Stremio 内置播放器解不了
+          prefix = "📦 ";
+          warn = "\n⚠️ RD 已打包为压缩包，内置播放器只出声不出画\n👉 Stremio 设置→外部播放器→选 VLC 后点本源（VLC 直接播rar）";
+        } else if (/\.(wmv|ts)$/i.test(fileName)) {
+          warn = "\n⚠️ 该格式(WMV/TS)部分设备无画面，P2P 源可换其他版本";
+        }
         streams.push({
-          name: streams.length === 0 ? "RD ☁️ 秒播" : `RD ☁️ #${streams.length + 1}`,
+          name: streams.length === 0 ? `${prefix}RD ☁️ 秒播` : `${prefix}RD ☁️ #${streams.length + 1}`,
           url: un.download,
           title: `${fileName}\n☁️ Real-Debrid 云端直链${warn}`,
         });
       }
-      if (!streams.length) return { error: "包内文件不是可播视频（rar/zip 压缩包无法直接播放）" };
+      if (!streams.length) return { error: "云端没有可用文件" };
       return { streams };
     } catch (err) {
     return { error: `RD 请求异常: ${(err && err.message) || err}` };
@@ -233,7 +240,7 @@ function getBuilder() {
       const keywords = (cat.config && cat.config.keywords) || [];
       const manifest = {
         id: "com.kevinhfwang.sukebei-catalog",
-        version: "1.1.5",
+        version: "1.1.6",
         name: "Sukebei 精选",
         description:
           "RSS 精选 Top（每 8 小时更新）· 安装页可配置 Real-Debrid key 云端秒播，未配置则返回 infoHash 走 P2P/客户端 RD",
