@@ -88,7 +88,10 @@ async function rdResolve(hash, key) {
   try {
     const lk = hash.toLowerCase();
     let e = rdIdCache.get(lk);
-    if (!e || Date.now() - e.at > 24 * 3600 * 1000) {
+    const _vext = /\.(mkv|mp4|avi|mov|wmv|ts|m4v|mpg|webm)$/i;
+
+    // 新任务流程：addMagnet → 等元数据 → 只勾选视频文件（前6大）→ RD 云端只下视频
+    const addAndSelect = async () => {
       let id = null;
       try {
         const added = await rdApi("/torrents/addMagnet", key, {
@@ -96,19 +99,11 @@ async function rdResolve(hash, key) {
           body: new URLSearchParams({ magnet: `magnet:?xt=urn:btih:${lk}` }),
         });
         id = added && added.id;
-        // 新 magnet：选全部文件，RD 云端开始离线下载
-        try {
-          await rdApi(`/torrents/selectFiles/${id}`, key, {
-            method: "POST",
-            body: new URLSearchParams({ files: "all" }),
-          });
-        } catch (_) {}
       } catch (err) {
         if (err.status === 401 || err.status === 403) {
           return { error: `RD key 无效或无权限(HTTP ${err.status})` };
         }
         if (err.status === 400) {
-          // 已添加过：从列表按 hash 找回 id
           const list = await rdApi("/torrents?limit=100", key);
           const found = (list || []).find(
             (t) => (t.hash || "").toLowerCase() === lk
@@ -122,38 +117,57 @@ async function rdResolve(hash, key) {
       if (!id) return { error: "RD 未返回任务 id" };
       e = { id, at: Date.now() };
       rdIdCache.set(lk, e);
-    }
-    const info0 = await rdApi(`/torrents/info/${e.id}`, key);
-    if (!info0) return { error: "RD 任务信息为空" };
-    // 等元数据列出文件（新 magnet 可能还在 magnet_error）
-    let meta = info0;
-    for (let i = 0; i < 5 && !((meta.files || []).length); i++) {
-      await new Promise((r) => setTimeout(r, 2000));
-      meta = await rdApi(`/torrents/info/${e.id}`, key);
-      if (!meta) break;
-    }
-    // 只勾选视频文件（按大小前 6），让 RD 云端跳过广告垃圾，也避免服务端整包打 rar
-    // 注意：RD 只允许在队列类状态改选文件，downloaded 状态调用会报错（静默跳过）
-    const _vext = /\.(mkv|mp4|avi|mov|wmv|ts|m4v|mpg|webm)$/i;
-    const _vids = ((meta && meta.files) || [])
-      .filter((f) => f.path && _vext.test(f.path))
-      .sort((a, b) => (b.bytes || 0) - (a.bytes || 0));
-    const wantIds = _vids.slice(0, 6).map((f) => String(f.id));
-    const curSel = (((meta && meta.files) || []).filter((f) => f.selected).map((f) => String(f.id))).sort().join(",");
-    const selectable = meta && ["magnet_conversion", "waiting_files_selection", "queued", "downloading"].includes(meta.status);
-    if (selectable && wantIds.length && wantIds.slice().sort().join(",") !== curSel) {
+      // 等元数据列出文件（最多 ~16s；等不到就 all 兜底先让下载跑起来）
+      let meta = await rdApi(`/torrents/info/${e.id}`, key);
+      for (let i = 0; meta && !((meta.files || []).length) && i < 8; i++) {
+        await new Promise((r) => setTimeout(r, 2000));
+        meta = await rdApi(`/torrents/info/${e.id}`, key);
+      }
+      const _vids = ((meta && meta.files) || [])
+        .filter((f) => f.path && _vext.test(f.path))
+        .sort((a, b) => (b.bytes || 0) - (a.bytes || 0));
+      const wantIds = _vids.slice(0, 6).map((f) => String(f.id));
       try {
         await rdApi(`/torrents/selectFiles/${e.id}`, key, {
           method: "POST",
-          body: new URLSearchParams({ files: wantIds.join(",") }),
+          body: new URLSearchParams({ files: wantIds.length ? wantIds.join(",") : "all" }),
         });
-        console.log(`[rd] 仅勾选视频文件: ${wantIds.join(",")}`);
-        await new Promise((r) => setTimeout(r, 1500));
+        console.log(`[rd] 新任务勾选: ${wantIds.join(",") || "all"}`);
       } catch (err) {
         console.log(`[rd] selectFiles 失败: ${(err && err.message) || err}`);
       }
+      await new Promise((r) => setTimeout(r, 1000));
+      return { info: await rdApi(`/torrents/info/${e.id}`, key) };
+    };
+
+    let info = null;
+    if (!e || Date.now() - e.at > 24 * 3600 * 1000) {
+      const r = await addAndSelect();
+      if (r.error) return r;
+      info = r.info;
+    } else {
+      info = await rdApi(`/torrents/info/${e.id}`, key);
+      if (!info) return { error: "RD 任务信息为空" };
+      // 已下载完成但勾选的是全文件（含广告垃圾）：删除重加为仅视频（RD 按 hash 缓存，秒完成）
+      const _vidsNow = ((info.files || []))
+        .filter((f) => f.path && _vext.test(f.path))
+        .sort((a, b) => (b.bytes || 0) - (a.bytes || 0));
+      const wantNow = _vidsNow.slice(0, 6).map((f) => String(f.id)).sort().join(",");
+      const curNow = ((info.files || []).filter((f) => f.selected).map((f) => String(f.id))).sort().join(",");
+      const multiFile = ((info.files || []).filter((f) => f.selected).length > 1);
+      if (info.status === "downloaded" && multiFile && wantNow && wantNow !== curNow) {
+        console.log(`[rd] 全选任务改仅视频，删除重加: ${lk.slice(0, 8)}`);
+        try { await rdApi(`/torrents/delete/${e.id}`, key, { method: "DELETE" }); } catch (_) {}
+        rdIdCache.delete(lk);
+        e = null;
+        const r = await addAndSelect();
+        if (r.error) return r;
+        info = r.info;
+        if (info && info.status !== "downloaded") {
+          return { error: `已改为仅下载视频文件，云端就绪后重试（当前=${info.status}）` };
+        }
+      }
     }
-    const info = await rdApi(`/torrents/info/${e.id}`, key);
     if (!info) return { error: "RD 任务信息为空" };
     if (info.status !== "downloaded") {
       return { error: `RD 云端状态=${info.status}（下载完成后重试）` };
@@ -271,7 +285,7 @@ function getBuilder() {
       const keywords = (cat.config && cat.config.keywords) || [];
       const manifest = {
         id: "com.kevinhfwang.sukebei-catalog",
-        version: "1.1.8",
+        version: "1.1.9",
         name: "Sukebei 精选",
         description:
           "RSS 精选 Top（每 8 小时更新）· 安装页可配置 Real-Debrid key 云端秒播，未配置则返回 infoHash 走 P2P/客户端 RD",
