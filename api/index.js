@@ -204,6 +204,21 @@ async function rdResolve(hash, key) {
       const wantNow = ranked.slice(0, 15).map((x) => String(x.f.id)).sort().join(",");
       const curNow = ((info.files || []).filter((f) => f.selected).map((f) => String(f.id))).sort().join(",");
       const multiFile = ((info.files || []).filter((f) => f.selected).length > 1);
+      // 下载队列中的任务：RD 允许即时改选，立刻停止下载非匹配文件
+      if (["queued", "downloading", "waiting_files_selection", "magnet_conversion"].includes(info.status)
+          && wantNow && wantNow !== curNow) {
+        try {
+          await rdApi(`/torrents/selectFiles/${e.id}`, key, {
+            method: "POST",
+            body: new URLSearchParams({ files: wantNow }),
+          });
+          console.log(`[rd] 下载中改选仅匹配视频: ${wantNow}`);
+          await new Promise((r) => setTimeout(r, 1000));
+          info = await rdApi(`/torrents/info/${e.id}`, key);
+        } catch (err) {
+          console.log(`[rd] 下载中改选失败: ${(err && err.message) || err}`);
+        }
+      }
       if (info.status === "downloaded" && multiFile && wantNow !== curNow) {
         console.log(`[rd] 全选任务改仅视频，删除重加: ${lk.slice(0, 8)}`);
         try { await rdApi(`/torrents/delete/${e.id}`, key, { method: "DELETE" }); } catch (_) {}
@@ -356,7 +371,7 @@ function getBuilder() {
       const keywords = (cat.config && cat.config.keywords) || [];
       const manifest = {
         id: "com.kevinhfwang.sukebei-catalog",
-        version: "1.2.3",
+        version: "1.2.4",
         name: "Sukebei 精选",
         description:
           "RSS 精选 Top（每 8 小时更新）· 安装页可配置 Real-Debrid key 云端秒播，未配置则返回 infoHash 走 P2P/客户端 RD",
