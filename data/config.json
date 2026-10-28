@@ -1,46 +1,56 @@
 {
-  "feed_template": "https://sukebei.nyaa.si/?page=rss&q={keyword}&s=seeders&o=desc",
-  "keywords": [
-    {
-      "keyword": "吃瓜",
-      "slug": "chigua",
-      "catalog_name": "吃瓜 · Top 150"
-    },
-    {
-      "keyword": "泄密",
-      "slug": "xiemi",
-      "catalog_name": "泄密 · Top 150"
-    },
-    {
-      "keyword": "国产",
-      "slug": "guochan",
-      "catalog_name": "国产 · Top 150"
-    },
-    {
-      "keyword": "网红",
-      "slug": "wanghong",
-      "catalog_name": "网红 · Top 150"
-    },
-    {
-      "keyword": "学生",
-      "slug": "xuesheng",
-      "catalog_name": "学生 · Top 150"
-    },
-    {
-      "keyword": "直播",
-      "slug": "zhibo",
-      "catalog_name": "直播 · Top 150"
-    },
-    {
-      "keyword": "反差",
-      "slug": "fancha",
-      "catalog_name": "反差 · Top 150"
-    }
-  ],
-  "per_keyword_limit": 150,
-  "keyword_variants": [
-    "",
-    "&c=2_1",
-    "&c=2_2"
-  ]
+ "feed_template": "https://sukebei.nyaa.si/?page=rss&q={keyword}&s=seeders&o=desc",
+ "keywords": [
+  {
+   "keyword": "吃瓜",
+   "slug": "chigua",
+   "catalog_name": "吃瓜 · Top 150"
+  },
+  {
+   "keyword": "泄密",
+   "slug": "xiemi",
+   "catalog_name": "泄密 · Top 150"
+  },
+  {
+   "keyword": "国产",
+   "slug": "guochan",
+   "catalog_name": "国产 · Top 150"
+  },
+  {
+   "keyword": "网红",
+   "slug": "wanghong",
+   "catalog_name": "网红 · Top 150"
+  },
+  {
+   "keyword": "学生",
+   "slug": "xuesheng",
+   "catalog_name": "学生 · Top 150"
+  },
+  {
+   "keyword": "直播",
+   "slug": "zhibo",
+   "catalog_name": "直播 · Top 150"
+  },
+  {
+   "keyword": "反差",
+   "slug": "fancha",
+   "catalog_name": "反差 · Top 150"
+  },
+  {
+   "keyword": "摄影师",
+   "slug": "sheyingshi",
+   "catalog_name": "摄影师 · Top 150"
+  },
+  {
+   "keyword": "空姐",
+   "slug": "kongjie",
+   "catalog_name": "空姐 · Top 150"
+  }
+ ],
+ "per_keyword_limit": 150,
+ "keyword_variants": [
+  "",
+  "&c=2_1",
+  "&c=2_2"
+ ]
 }
