@@ -123,16 +123,30 @@ async function rdResolve(hash, key) {
         await new Promise((r) => setTimeout(r, 2000));
         meta = await rdApi(`/torrents/info/${e.id}`, key);
       }
+      // 视频排序：与种子同名（去扩展名的 basename 前缀匹配）优先，其余按大小
+      const baseName = (p) => {
+        const b = (p || "").split("/").pop();
+        return b.replace(/\.[a-z0-9]{2,5}$/i, "");
+      };
+      const tname = baseName(meta && meta.filename);
+      const score = (f) => {
+        const bn = baseName(f.path);
+        return tname && (bn === tname || bn.startsWith(tname)) ? 0 : 1;
+      };
       const _vids = ((meta && meta.files) || [])
         .filter((f) => f.path && _vext.test(f.path))
-        .sort((a, b) => (b.bytes || 0) - (a.bytes || 0));
-      const wantIds = _vids.slice(0, 1).map((f) => String(f.id));
+        .sort((a, b) => (score(a) - score(b)) || ((b.bytes || 0) - (a.bytes || 0)));
+      // 只选与种子同名的视频文件；没有同名视频则完全不勾选（不耗 RD 流量，走 P2P）
+      const wantIds = _vids.filter((f) => score(f) === 0).slice(0, 6).map((f) => String(f.id));
+      if (!wantIds.length) {
+        return { error: "包内没有与种子同名的视频，已跳过 RD 下载（请用 P2P 源）" };
+      }
       try {
         await rdApi(`/torrents/selectFiles/${e.id}`, key, {
           method: "POST",
-          body: new URLSearchParams({ files: wantIds.length ? wantIds.join(",") : "all" }),
+          body: new URLSearchParams({ files: wantIds.join(",") }),
         });
-        console.log(`[rd] 新任务勾选: ${wantIds.join(",") || "all"}`);
+        console.log(`[rd] 新任务勾选同名视频: ${wantIds.join(",")}`);
       } catch (err) {
         console.log(`[rd] selectFiles 失败: ${(err && err.message) || err}`);
       }
@@ -149,10 +163,20 @@ async function rdResolve(hash, key) {
       info = await rdApi(`/torrents/info/${e.id}`, key);
       if (!info) return { error: "RD 任务信息为空" };
       // 已下载完成但勾选的是全文件（含广告垃圾）：删除重加为仅视频（RD 按 hash 缓存，秒完成）
+      const baseName = (p) => {
+        const b = (p || "").split("/").pop();
+        return b.replace(/\.[a-z0-9]{2,5}$/i, "");
+      };
+      const tname = baseName(info.filename);
+      const score = (f) => {
+        const bn = baseName(f.path);
+        return tname && (bn === tname || bn.startsWith(tname)) ? 0 : 1;
+      };
       const _vidsNow = ((info.files || []))
         .filter((f) => f.path && _vext.test(f.path))
-        .sort((a, b) => (b.bytes || 0) - (a.bytes || 0));
-      const wantNow = _vidsNow.slice(0, 1).map((f) => String(f.id)).sort().join(",");
+        .sort((a, b) => (score(a) - score(b)) || ((b.bytes || 0) - (a.bytes || 0)));
+      // 只选与种子同名的视频（无同名则不重加，不打扰已有任务）
+      const wantNow = _vidsNow.filter((f) => score(f) === 0).slice(0, 6).map((f) => String(f.id)).sort().join(",");
       const curNow = ((info.files || []).filter((f) => f.selected).map((f) => String(f.id))).sort().join(",");
       const multiFile = ((info.files || []).filter((f) => f.selected).length > 1);
       if (info.status === "downloaded" && multiFile && wantNow && wantNow !== curNow) {
@@ -285,7 +309,7 @@ function getBuilder() {
       const keywords = (cat.config && cat.config.keywords) || [];
       const manifest = {
         id: "com.kevinhfwang.sukebei-catalog",
-        version: "1.2.0",
+        version: "1.2.1",
         name: "Sukebei 精选",
         description:
           "RSS 精选 Top（每 8 小时更新）· 安装页可配置 Real-Debrid key 云端秒播，未配置则返回 infoHash 走 P2P/客户端 RD",
