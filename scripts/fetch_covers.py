@@ -33,6 +33,10 @@ RD_FETCH_MAX = int(os.environ.get("RD_FETCH_MAX", "10"))
 FETCH_VIA_TORRENT = os.environ.get("FETCH_VIA_TORRENT", "1") == "1"
 TORRENT_FETCH_MAX = int(os.environ.get("TORRENT_FETCH_MAX", "6"))
 TORRENT_TIMEOUT = int(os.environ.get("TORRENT_TIMEOUT", "240"))
+SNAPSHOT_MAX = int(os.environ.get("SNAPSHOT_MAX", "3"))
+SNAPSHOT_MAX_BYTES = int(os.environ.get("SNAPSHOT_MAX_BYTES", str(2 * 1024 ** 3)))
+SNAPSHOT_TIMEOUT = int(os.environ.get("SNAPSHOT_TIMEOUT", "1500"))
+VIDEO_EXT = (".mp4", ".mkv", ".avi", ".mov", ".wmv", ".m4v", ".webm", ".ts", ".mpg")
 UA = ("Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) "
       "AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36")
 
@@ -197,11 +201,108 @@ def torrent_fetch_cover(view_link, ih):
         return None
     finally:
         shutil.rmtree(td, ignore_errors=True)
-        if tmp_t:
+
+
+def torrent_snapshot(view_link, ih):
+    """整下主视频（同名优先其次最大，≤SNAPSHOT_MAX_BYTES），ffmpeg 抽帧。返回 jpg bytes 或 None"""
+    import tempfile
+    import subprocess
+    try:
+        import libtorrent as lt
+    except ImportError:
+        print("   ⚠️ 无 libtorrent，跳过抽帧")
+        return None
+    td = tempfile.mkdtemp(prefix="sukebei_snap_")
+    snap = os.path.join(td, "_snap.jpg")
+    try:
+        ses = lt.session({"listen_interfaces": "0.0.0.0:6881", "upload_rate_limit": 10000,
+                          "announce_to_all_trackers": True, "announce_to_all_tiers": True})
+        info = None
+        h = None
+        # 1) .torrent 直下（最快）
+        m = re.search(r"/view/(\d+)", view_link or "")
+        if m:
             try:
-                os.unlink(tmp_t)
-            except OSError:
-                pass
+                status, raw = http_bytes(f"https://sukebei.nyaa.si/download/{m.group(1)}.torrent", timeout=20)
+                if status == 200 and len(raw) > 100:
+                    with tempfile.NamedTemporaryFile(suffix=".torrent", delete=False) as f:
+                        f.write(raw)
+                    info = lt.torrent_info(f.name)
+                    h = ses.add_torrent({"ti": info, "save_path": td})
+            except Exception:
+                info = None
+        # 2) magnet + DHT + 公共 tracker
+        if info is None:
+            magnet = f"magnet:?xt=urn:btih:{ih}" + "".join(
+                f"&tr={urllib.parse.quote(t)}" for t in TRACKERS)
+            h = lt.add_magnet_uri(ses, magnet, {"save_path": td})
+            t0 = time.time()
+            while time.time() - t0 < 90:
+                if h.has_metadata():
+                    break
+                time.sleep(2)
+            if not h.has_metadata():
+                print("   ⏱ DHT 元数据超时 (90s)")
+                ses.remove_torrent(h)
+                return None
+            info = h.torrent_file() if hasattr(h, "torrent_file") else h.get_torrent_file()
+        fs = info.files()
+        vids = [(i, fs.file_size(i), fs.file_path(i)) for i in range(fs.num_files())
+                if fs.file_path(i).lower().endswith(VIDEO_EXT)
+                and 10_000_000 < fs.file_size(i) <= SNAPSHOT_MAX_BYTES]
+        if not vids:
+            print("   ⊘ 包内无合适大小视频文件")
+            ses.remove_torrent(h)
+            return None
+        # 同名优先，其次最大
+        def _bn(p):
+            return os.path.basename(p).rsplit(".", 1)[0]
+        tname = _bn(info.name() if hasattr(info, "name") else "")
+        vids.sort(key=lambda x: (not (tname and _bn(x[2]).startswith(tname)), -x[1]))
+        best = vids[0][0]
+        print(f"   🎞 抽帧对象: {fs.file_path(best)[:60]} ({fs.file_size(best)//1024//1024}MB)")
+        for i in range(fs.num_files()):
+            h.file_priority(i, 7 if i == best else 0)
+        t0 = time.time()
+        ok = False
+        while time.time() - t0 < SNAPSHOT_TIMEOUT:
+            if h.status().progress >= 1:
+                ok = True
+                break
+            if int(time.time() - t0) % 60 < 3:
+                try:
+                    h.force_reannounce()
+                except Exception:
+                    pass
+            time.sleep(5)
+        ses.remove_torrent(h)
+        if not ok:
+            print(f"   ⏱ 整片下载超时 ({SNAPSHOT_TIMEOUT}s)")
+            return None
+        vpath = os.path.join(td, fs.file_path(best))
+        # 抽帧位置：10% 处（避开片头黑屏/广告）
+        try:
+            dur = subprocess.run(
+                ["ffprobe", "-v", "error", "-show_entries", "format=duration",
+                 "-of", "csv=p=0", vpath],
+                capture_output=True, text=True, timeout=60).stdout.strip()
+            pos = max(10.0, float(dur) * 0.1) if dur else 30.0
+        except Exception:
+            pos = 30.0
+        r = subprocess.run(
+            ["ffmpeg", "-y", "-v", "error", "-ss", f"{pos:.1f}", "-i", vpath,
+             "-frames:v", "1", "-q:v", "3", snap],
+            capture_output=True, text=True, timeout=180)
+        if r.returncode != 0 or not os.path.exists(snap) or os.path.getsize(snap) < 2000:
+            print(f"   ⚠️ ffmpeg 抽帧失败: {r.stderr[:150]}")
+            return None
+        with open(snap, "rb") as f:
+            return f.read()
+    except Exception as e:
+        print(f"   ⚠️ 快照失败: {e}")
+        return None
+    finally:
+        shutil.rmtree(td, ignore_errors=True)
 
 
 # ---------- Real-Debrid ----------
@@ -374,24 +475,24 @@ def main():
         except Exception:
             pass
 
-    # 需要封面的条目：无 poster、未永久失败、未确认无图
+    # 需要封面的条目：无 poster、未永久失败（noimg 也保留——视频抽帧兜底）
     todo = [it for it in items.values()
             if not it.get("poster")
-            and it.get("cover_status", "") not in ("noimg", "failed:9")]
+            and it.get("cover_status", "") != "failed:9"]
     # 优先处理 catalog 前排（高 seeders）
     todo.sort(key=lambda x: -x.get("seeders", 0))
     todo = todo[:COVER_BATCH]
     print(f"🖼️ 待补封面 {len(todo)} 个（本轮上限 {COVER_BATCH}；BT 直抽 {TORRENT_FETCH_MAX}，RD 兜底 {RD_FETCH_MAX}；已排除 noimg）")
 
-    rd_used = torrent_used = 0
-    javdb_done = rd_done = bt_done = 0
+    rd_used = torrent_used = snap_used = 0
+    javdb_done = rd_done = bt_done = snap_done = 0
 
     def mark_failed(it):
         tries = int(it.get("cover_status", "failed:0").split(":")[-1]) + 1 if it.get("cover_status") else 1
         it["cover_status"] = f"failed:{tries}" if tries < 2 else "failed:9"
 
     def try_push(it, content, source):
-        nonlocal rd_done, bt_done
+        nonlocal rd_done, bt_done, snap_done
         try:
             if COVERS_PAT:
                 # 自有 covers 仓库（配了 COVERS_PAT 时最耐删）
@@ -405,6 +506,8 @@ def main():
             it["cover_status"] = source
             if source == "rd":
                 rd_done += 1
+            elif source == "snap":
+                snap_done += 1
             else:
                 bt_done += 1
             print(f"✓ 已托管 ({len(content)//1024}KB, {source}): {it['poster']}")
@@ -424,8 +527,9 @@ def main():
                 it["cover_status"] = "javdb"
                 javdb_done += 1
                 print(f"✓ [{code}] JavDB 封面")
-        # 1) libtorrent 直抽（免费，无需 RD）
-        if not poster and FETCH_VIA_TORRENT and torrent_used < TORRENT_FETCH_MAX:
+        # 1) libtorrent 直抽（免费，无需 RD；已确认无图的种子跳过）
+        if not poster and FETCH_VIA_TORRENT and torrent_used < TORRENT_FETCH_MAX \
+                and it.get("cover_status") != "noimg":
             torrent_used += 1
             print(f"🧲 [{ih[:8]}] BT 抽图: {title[:40]}")
             try:
@@ -439,7 +543,18 @@ def main():
             elif it.get("cover_status") != "noimg":
                 mark_failed(it)
                 print("   ✗ 未抽到图")
-        # 2) RD 兜底（配了 RD_TOKEN 时）
+        # 2) 视频抽帧（无图种子兜底：整下主视频，ffmpeg 截一帧）
+        if not it.get("poster") and FETCH_VIA_TORRENT and snap_used < SNAPSHOT_MAX:
+            snap_used += 1
+            print(f"🎬 [{ih[:8]}] 视频抽帧: {title[:40]}")
+            content = torrent_snapshot(it.get("link", ""), ih)
+            if content:
+                try_push(it, content, "snap")
+            else:
+                if it.get("cover_status") != "noimg":
+                    mark_failed(it)
+                print("   ✗ 抽帧未成功")
+        # 3) RD 兜底（配了 RD_TOKEN 时）
         if not it.get("poster") and RD_TOKEN and rd_used < RD_FETCH_MAX \
                 and it.get("cover_status", "").split(":")[0] == "failed":
             rd_used += 1
@@ -455,7 +570,7 @@ def main():
     cat["updated_at"] = time.strftime("%Y-%m-%dT%H:%M:%S+00:00", time.gmtime())
     CATALOG_FILE.write_text(json.dumps(cat, ensure_ascii=False, indent=1), encoding="utf-8")
     CACHE_FILE.write_text(json.dumps(cache, ensure_ascii=False, indent=1), encoding="utf-8")
-    print(f"\n✅ 本轮封面: JavDB {javdb_done}，BT {bt_done}，RD {rd_done}")
+    print(f"\n✅ 本轮封面: JavDB {javdb_done}，BT {bt_done}，抽帧 {snap_done}，RD {rd_done}")
     if not RD_TOKEN:
         print("ℹ️ 未设 RD_TOKEN（BT 直抽失败的不重试 RD）")
     return 0
