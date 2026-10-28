@@ -133,13 +133,15 @@ async function rdResolve(hash, key) {
       if (!meta) break;
     }
     // 只勾选视频文件（按大小前 6），让 RD 云端跳过广告垃圾，也避免服务端整包打 rar
+    // 注意：RD 只允许在队列类状态改选文件，downloaded 状态调用会报错（静默跳过）
     const _vext = /\.(mkv|mp4|avi|mov|wmv|ts|m4v|mpg|webm)$/i;
     const _vids = ((meta && meta.files) || [])
       .filter((f) => f.path && _vext.test(f.path))
       .sort((a, b) => (b.bytes || 0) - (a.bytes || 0));
     const wantIds = _vids.slice(0, 6).map((f) => String(f.id));
     const curSel = (((meta && meta.files) || []).filter((f) => f.selected).map((f) => String(f.id))).sort().join(",");
-    if (wantIds.length && wantIds.slice().sort().join(",") !== curSel) {
+    const selectable = meta && ["magnet_conversion", "waiting_files_selection", "queued", "downloading"].includes(meta.status);
+    if (selectable && wantIds.length && wantIds.slice().sort().join(",") !== curSel) {
       try {
         await rdApi(`/torrents/selectFiles/${e.id}`, key, {
           method: "POST",
@@ -147,7 +149,9 @@ async function rdResolve(hash, key) {
         });
         console.log(`[rd] 仅勾选视频文件: ${wantIds.join(",")}`);
         await new Promise((r) => setTimeout(r, 1500));
-      } catch (_) {}
+      } catch (err) {
+        console.log(`[rd] selectFiles 失败: ${(err && err.message) || err}`);
+      }
     }
     const info = await rdApi(`/torrents/info/${e.id}`, key);
     if (!info) return { error: "RD 任务信息为空" };
@@ -227,6 +231,7 @@ async function buildStreams(item, conf) {
       streams.push(...rd.streams);
     } else {
       rdNote = `⚠️ RD未生效：${rd.error || "未知原因"}\n`;
+      console.log(`[rd] 失败 ${item.infoHash.slice(0, 8)}: ${rd.error || "未知原因"}`);
     }
   }
   streams.push({
@@ -266,7 +271,7 @@ function getBuilder() {
       const keywords = (cat.config && cat.config.keywords) || [];
       const manifest = {
         id: "com.kevinhfwang.sukebei-catalog",
-        version: "1.1.7",
+        version: "1.1.8",
         name: "Sukebei 精选",
         description:
           "RSS 精选 Top（每 8 小时更新）· 安装页可配置 Real-Debrid key 云端秒播，未配置则返回 infoHash 走 P2P/客户端 RD",
