@@ -200,7 +200,7 @@ function getBuilder() {
       const keywords = (cat.config && cat.config.keywords) || [];
       const manifest = {
         id: "com.kevinhfwang.sukebei-catalog",
-        version: "1.1.0",
+        version: "1.1.1",
         name: "Sukebei 精选",
         description:
           "RSS 精选 Top（每 8 小时更新）· 安装页可配置 Real-Debrid key 云端秒播，未配置则返回 infoHash 走 P2P/客户端 RD",
