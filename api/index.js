@@ -154,6 +154,9 @@ async function rdResolve(hash, key) {
         }
       }
       if (!pick) return { error: "云端里没选到视频文件" };
+      // WMV/TS 在多数设备上只出声不出画，标题里警告
+      let warn = "";
+      if (/\.(wmv|ts)$/i.test(pickName)) warn = "\n⚠️ 该格式(WMV/TS)部分设备无画面，P2P 源可换其他版本";
       // torrents/info 的 links 还不是最终直链，必须再过 /unrestrict/link 换 CDN 地址
       const un = await rdApi("/unrestrict/link", key, {
         method: "POST",
@@ -164,7 +167,7 @@ async function rdResolve(hash, key) {
         stream: {
           name: "RD ☁️ 秒播",
           url: un.download,
-          title: `${pickName}\n☁️ Real-Debrid 云端直链`,
+          title: `${pickName}\n☁️ Real-Debrid 云端直链${warn}`,
         },
       };
     } catch (err) {
@@ -220,7 +223,7 @@ function getBuilder() {
       const keywords = (cat.config && cat.config.keywords) || [];
       const manifest = {
         id: "com.kevinhfwang.sukebei-catalog",
-        version: "1.1.2",
+        version: "1.1.3",
         name: "Sukebei 精选",
         description:
           "RSS 精选 Top（每 8 小时更新）· 安装页可配置 Real-Debrid key 云端秒播，未配置则返回 infoHash 走 P2P/客户端 RD",
