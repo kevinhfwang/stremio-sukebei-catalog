@@ -126,7 +126,7 @@ async function rdResolve(hash, key) {
       const _vids = ((meta && meta.files) || [])
         .filter((f) => f.path && _vext.test(f.path))
         .sort((a, b) => (b.bytes || 0) - (a.bytes || 0));
-      const wantIds = _vids.slice(0, 6).map((f) => String(f.id));
+      const wantIds = _vids.slice(0, 1).map((f) => String(f.id));
       try {
         await rdApi(`/torrents/selectFiles/${e.id}`, key, {
           method: "POST",
@@ -152,7 +152,7 @@ async function rdResolve(hash, key) {
       const _vidsNow = ((info.files || []))
         .filter((f) => f.path && _vext.test(f.path))
         .sort((a, b) => (b.bytes || 0) - (a.bytes || 0));
-      const wantNow = _vidsNow.slice(0, 6).map((f) => String(f.id)).sort().join(",");
+      const wantNow = _vidsNow.slice(0, 1).map((f) => String(f.id)).sort().join(",");
       const curNow = ((info.files || []).filter((f) => f.selected).map((f) => String(f.id))).sort().join(",");
       const multiFile = ((info.files || []).filter((f) => f.selected).length > 1);
       if (info.status === "downloaded" && multiFile && wantNow && wantNow !== curNow) {
@@ -285,7 +285,7 @@ function getBuilder() {
       const keywords = (cat.config && cat.config.keywords) || [];
       const manifest = {
         id: "com.kevinhfwang.sukebei-catalog",
-        version: "1.1.9",
+        version: "1.2.0",
         name: "Sukebei 精选",
         description:
           "RSS 精选 Top（每 8 小时更新）· 安装页可配置 Real-Debrid key 云端秒播，未配置则返回 infoHash 走 P2P/客户端 RD",
