@@ -14,6 +14,7 @@ fetch_covers.py - 为 catalog 条目补封面
 import json
 import os
 import re
+import shutil
 import sys
 import time
 import urllib.parse
@@ -109,6 +110,9 @@ def javdb_search(code, cache):
 
 # ---------- BitTorrent 直抽（libtorrent，无需 RD） ----------
 
+class NoImageInTorrent(Exception):
+    """种子元数据已确认：包内没有可抽取的图片（永久状态，不必重试）"""
+
 def torrent_fetch_cover(view_link, ih):
     """取种子元数据：先直下 .torrent，被墙则走 magnet/DHT。然后只拉最小图片文件。返回 bytes 或 None"""
     import tempfile
@@ -118,8 +122,9 @@ def torrent_fetch_cover(view_link, ih):
         print("   ⚠️ 无 libtorrent，跳过直抽")
         return None
     tmp_t = None
+    td = tempfile.mkdtemp(prefix="sukebei_cover_")
     try:
-        with tempfile.TemporaryDirectory() as td:
+        if True:
             ses = lt.session({"listen_interfaces": "0.0.0.0:6881", "upload_rate_limit": 10000,
                               "announce_to_all_trackers": True, "announce_to_all_tiers": True})
             info = None
@@ -162,7 +167,7 @@ def torrent_fetch_cover(view_link, ih):
             if not imgs:
                 if h:
                     ses.remove_torrent(h)
-                return None
+                raise NoImageInTorrent()
             imgs.sort(key=lambda x: (not IMG_PREFER.search(x[2]), x[1]))
             best = imgs[0][0]
             for i in range(fs.num_files()):
@@ -185,10 +190,13 @@ def torrent_fetch_cover(view_link, ih):
                 return None
             with open(os.path.join(td, fs.file_path(best)), "rb") as f:
                 return f.read()
+    except NoImageInTorrent:
+        raise
     except Exception as e:
         print(f"   ⚠️ BT 抽图失败: {e}")
         return None
     finally:
+        shutil.rmtree(td, ignore_errors=True)
         if tmp_t:
             try:
                 os.unlink(tmp_t)
@@ -366,13 +374,14 @@ def main():
         except Exception:
             pass
 
-    # 需要封面的条目：无 poster 且未失败过 2 次
+    # 需要封面的条目：无 poster、未永久失败、未确认无图
     todo = [it for it in items.values()
-            if not it.get("poster") and it.get("cover_status", "").split(":")[0] != "failed"]
+            if not it.get("poster")
+            and it.get("cover_status", "") not in ("noimg", "failed:9")]
     # 优先处理 catalog 前排（高 seeders）
     todo.sort(key=lambda x: -x.get("seeders", 0))
     todo = todo[:COVER_BATCH]
-    print(f"🖼️ 待补封面 {len(todo)} 个（本轮上限 {COVER_BATCH}；BT 直抽 {TORRENT_FETCH_MAX}，RD 兜底 {RD_FETCH_MAX}）")
+    print(f"🖼️ 待补封面 {len(todo)} 个（本轮上限 {COVER_BATCH}；BT 直抽 {TORRENT_FETCH_MAX}，RD 兜底 {RD_FETCH_MAX}；已排除 noimg）")
 
     rd_used = torrent_used = 0
     javdb_done = rd_done = bt_done = 0
@@ -419,10 +428,15 @@ def main():
         if not poster and FETCH_VIA_TORRENT and torrent_used < TORRENT_FETCH_MAX:
             torrent_used += 1
             print(f"🧲 [{ih[:8]}] BT 抽图: {title[:40]}")
-            content = torrent_fetch_cover(it.get("link", ""), ih)
+            try:
+                content = torrent_fetch_cover(it.get("link", ""), ih)
+            except NoImageInTorrent:
+                it["cover_status"] = "noimg"
+                print("   ⊘ 种子内无图，永久跳过")
+                content = None
             if content:
                 try_push(it, content, "bt")
-            else:
+            elif it.get("cover_status") != "noimg":
                 mark_failed(it)
                 print("   ✗ 未抽到图")
         # 2) RD 兜底（配了 RD_TOKEN 时）
