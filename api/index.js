@@ -83,7 +83,7 @@ async function rdApi(path, key, opts = {}) {
   return j;
 }
 
-// 返回 {stream, error}：成功给直链 stream，失败给可读原因（显示在 P2P 源副标题里便于排查）
+// 返回 {streams, error}：成功给直链数组，失败给可读原因（显示在 P2P 源副标题里便于排查）
 async function rdResolve(hash, key) {
   try {
     const lk = hash.toLowerCase();
@@ -137,9 +137,7 @@ async function rdResolve(hash, key) {
       const selIdx = files
         .map((f, i) => (f && f.selected ? i : -1))
         .filter((i) => i >= 0);
-      let pick = null;
-      let pickName = info.filename || "";
-      let bestBytes = -1;
+      const vids = [];
       let li = 0;
       for (const i of selIdx) {
         const link = info.links[li];
@@ -147,29 +145,36 @@ async function rdResolve(hash, key) {
         if (!link) break;
         const path = files[i].path || "";
         const bytes = files[i].bytes || 0;
-        if (videoExt.test(path) && bytes > bestBytes) {
-          bestBytes = bytes;
-          pick = link;
-          pickName = path.split("/").pop() || path;
+        if (videoExt.test(path)) {
+          vids.push({ link, path, bytes });
         }
       }
-      if (!pick) return { error: "云端里没选到视频文件" };
-      // WMV/TS 在多数设备上只出声不出画，标题里警告
-      let warn = "";
-      if (/\.(wmv|ts)$/i.test(pickName)) warn = "\n⚠️ 该格式(WMV/TS)部分设备无画面，P2P 源可换其他版本";
-      // torrents/info 的 links 还不是最终直链，必须再过 /unrestrict/link 换 CDN 地址
-      const un = await rdApi("/unrestrict/link", key, {
-        method: "POST",
-        body: new URLSearchParams({ link: pick }),
-      });
-      if (!un || !un.download) return { error: "unrestrict 未返回直链" };
-      return {
-        stream: {
-          name: "RD ☁️ 秒播",
-          url: un.download,
-          title: `${pickName}\n☁️ Real-Debrid 云端直链${warn}`,
-        },
-      };
+      if (!vids.length) return { error: "云端里没选到视频文件" };
+      // 大包按大小降序列出，每个视频文件各给一个源，便于定位/挑选
+      vids.sort((a, b) => b.bytes - a.bytes);
+      const picks = vids.slice(0, 6);
+      const streams = [];
+      for (let n = 0; n < picks.length; n++) {
+        const v = picks[n];
+        const fileName = v.path.split("/").pop() || v.path;
+        // WMV/TS 在多数设备上只出声不出画，标题里警告
+        let warn = "";
+        if (/\.(wmv|ts)$/i.test(fileName)) warn = "\n⚠️ 该格式(WMV/TS)部分设备无画面，P2P 源可换其他版本";
+        // torrents/info 的 links 还不是最终直链，必须再过 /unrestrict/link 换 CDN 地址
+        const un = await rdApi("/unrestrict/link", key, {
+          method: "POST",
+          body: new URLSearchParams({ link: v.link }),
+        });
+        if (un && un.download) {
+          streams.push({
+            name: n === 0 ? "RD ☁️ 秒播" : `RD ☁️ #${n + 1}`,
+            url: un.download,
+            title: `${fileName}\n☁️ Real-Debrid 云端直链${warn}`,
+          });
+        }
+      }
+      if (!streams.length) return { error: "unrestrict 未返回直链" };
+      return { streams };
     } catch (err) {
     return { error: `RD 请求异常: ${(err && err.message) || err}` };
   }
@@ -180,8 +185,8 @@ async function buildStreams(item, conf) {
   let rdNote = "";
   if (conf && conf.rd) {
     const rd = await rdResolve(item.infoHash, conf.rd);
-    if (rd.stream) {
-      streams.push(rd.stream);
+    if (rd.streams && rd.streams.length) {
+      streams.push(...rd.streams);
     } else {
       rdNote = `⚠️ RD未生效：${rd.error || "未知原因"}\n`;
     }
@@ -223,7 +228,7 @@ function getBuilder() {
       const keywords = (cat.config && cat.config.keywords) || [];
       const manifest = {
         id: "com.kevinhfwang.sukebei-catalog",
-        version: "1.1.3",
+        version: "1.1.4",
         name: "Sukebei 精选",
         description:
           "RSS 精选 Top（每 8 小时更新）· 安装页可配置 Real-Debrid key 云端秒播，未配置则返回 infoHash 走 P2P/客户端 RD",
