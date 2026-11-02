@@ -150,7 +150,7 @@ async function rdResolve(hash, key) {
       if (!id) return { error: "RD 未返回任务 id" };
       e = { id, at: Date.now() };
       rdIdCache.set(lk, e);
-      // 等元数据列出文件（最多 ~16s；等不到就 all 兜底先让下载跑起来）
+      // 等元数据列出文件（最多 ~16s）；等不到/没有视频就跳过——绝不 all 兜底把压缩包拉下来
       let meta = await rdApi(`/torrents/info/${e.id}`, key);
       for (let i = 0; meta && !((meta.files || []).length) && i < 8; i++) {
         await new Promise((r) => setTimeout(r, 2000));
@@ -177,7 +177,14 @@ async function rdResolve(hash, key) {
       // 只勾选匹配到的视频（最多15个，多个全列在源列表）
       const wantIds = ranked.slice(0, 15).map((x) => String(x.f.id));
       if (!wantIds.length) {
-        return { error: "包内没有同名/关键词匹配的视频，已跳过 RD 下载（请用 P2P 源）" };
+        const hasArchive = ((meta && meta.files) || []).some((f) =>
+          /\.(zip|rar|7z|tar|gz)$/i.test(f.path || "")
+        );
+        return {
+          error: hasArchive
+            ? "源是 zip/rar 压缩包，已跳过 RD 下载（可用 P2P 源）"
+            : "包内没有同名/关键词匹配的视频，已跳过 RD 下载（请用 P2P 源）",
+        };
       }
       try {
         await rdApi(`/torrents/selectFiles/${e.id}`, key, {
@@ -388,7 +395,7 @@ function getBuilder() {
       const keywords = (cat.config && cat.config.keywords) || [];
       const manifest = {
         id: "com.kevinhfwang.sukebei-catalog",
-        version: "1.2.6",
+        version: "1.2.7",
         name: "Sukebei 精选",
         description:
           "RSS 精选 Top（每 8 小时更新）· 安装页可配置 Real-Debrid key 云端秒播，未配置则返回 infoHash 走 P2P/客户端 RD",
