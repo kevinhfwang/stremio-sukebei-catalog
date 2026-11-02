@@ -371,7 +371,7 @@ function getBuilder() {
       const keywords = (cat.config && cat.config.keywords) || [];
       const manifest = {
         id: "com.kevinhfwang.sukebei-catalog",
-        version: "1.2.4",
+        version: "1.2.5",
         name: "Sukebei 精选",
         description:
           "RSS 精选 Top（每 8 小时更新）· 安装页可配置 Real-Debrid key 云端秒播，未配置则返回 infoHash 走 P2P/客户端 RD",
@@ -419,7 +419,7 @@ function getBuilder() {
   return builderPromise;
 }
 
-function landing(req, res) {
+function landing(req, res, prefillKey) {
   const host = req.headers["x-forwarded-host"] || req.headers.host || "localhost";
   res.setHeader("Content-Type", "text/html; charset=utf-8");
   res.end(`<!DOCTYPE html><html><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Sukebei 精选 · 安装</title>
@@ -434,7 +434,8 @@ button{width:100%;padding:12px;border:0;border-radius:8px;background:#4ea1ff;col
 <p>RSS 定时抓取 · Top/分类 · 每 8 小时更新 · 18+</p>
 <h3>配置 Real-Debrid（可选，云端秒播）</h3>
 <p class="warn">在 <a href="https://real-debrid.com/apitoken" target="_blank">real-debrid.com/apitoken</a> 复制你的 API key 填入下方。不填则返回裸 infoHash（P2P，或依赖 Stremio 客户端自己登录的 RD）。</p>
-<input id="key" type="password" placeholder="Real-Debrid API key" autocomplete="off">
+<input id="key" type="text" placeholder="Real-Debrid API key" autocomplete="off" value="${(prefillKey || "").replace(/"/g, "")}">
+<p class="warn" id="curkey">${prefillKey ? "当前已配置 RD key（已填入下方输入框），确认无误点按钮生成安装链接即可。" : ""}</p>
 <button onclick="go()">生成安装链接</button>
 <div id="out"></div>
 <p class="warn">注意：key 会编码在安装 URL 里（仅自己设备使用）。</p>
@@ -466,9 +467,13 @@ module.exports = async (req, res) => {
   // 安装页
   if (path === "/" || path === "") return landing(req, res);
 
-  // 可选配置前缀：/<conf>/manifest.json 或 /<conf>/{catalog,stream,meta}/...
+  // 可选配置前缀：/<conf>/manifest.json、/<conf>/configure 或 /<conf>/{catalog,stream,meta}/...
   let conf = null;
   const seg = path.match(/^\/([A-Za-z0-9\-_]{8,})\/(.+)$/);
+  if (seg && seg[2] === "configure") {
+    const c = parseConf(seg[1]);
+    return landing(req, res, (c && c.rd) || "");
+  }
   if (seg && (seg[2] === "manifest.json" || /^(catalog|stream|meta)\//.test(seg[2]))) {
     conf = parseConf(seg[1]);
     path = "/" + seg[2];
