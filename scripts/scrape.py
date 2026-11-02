@@ -120,6 +120,60 @@ def parse_feed(raw, keyword):
     return items
 
 
+def parse_tokyotosho(raw, keyword):
+    """解析 TokyoTosho RSS（JAV 分类）。磁链多为 base32 btih，转 hex40；
+    TT 不统计 seeders，占位 1（排在真实 0 种子死种之上）"""
+    import base64
+    import binascii
+    items = []
+    try:
+        root = ET.fromstring(raw)
+    except ET.ParseError as e:
+        print(f"   ✗ TT XML 解析失败: {e}")
+        return items
+    for item in root.iter():
+        if localname(item.tag) != "item":
+            continue
+        title, desc, link = "", "", ""
+        for child in item:
+            name = localname(child.tag)
+            text = (child.text or "").strip()
+            if name == "description":
+                desc = text
+            elif name == "title":
+                title = text
+            elif name == "link":
+                link = text
+        m = re.search(r"magnet:\?xt=urn:btih:([0-9a-fA-F]{40}|[A-Za-z2-7]{32})", desc)
+        if not m:
+            continue
+        h = m.group(1)
+        if len(h) == 32:
+            try:
+                h = binascii.hexlify(base64.b32decode(h.upper())).decode()
+            except Exception:
+                continue
+        h = h.lower()
+        size = ""
+        ms = re.search(r"Size:\s*([^<]+)", desc)
+        if ms:
+            size = ms.group(1).strip()
+        title = title.replace("&quot;", '"').replace("&amp;", "&").replace("&#34;", '"')
+        items.append({
+            "id": h,
+            "name": title,
+            "infoHash": h,
+            "seeders": 1,
+            "nyaa_category": "JAV",
+            "link": link or "",
+            "size": size,
+            "poster": "",
+            "keyword": keyword,
+            "first_seen": now_iso(),
+        })
+    return items
+
+
 def load_catalog():
     if CATALOG_FILE.exists():
         try:
@@ -147,6 +201,10 @@ def main():
     for kw in cfg["keywords"]:
         keyword = kw["keyword"]
         slug = kw["slug"]
+        run_top[slug] = (keyword, [])
+        if kw.get("external"):
+            # 外部源条目在 extra_feeds 阶段填充
+            continue
         collected = []
         for vi, variant in enumerate(variants, 1):
             url = template.format(keyword=urllib.parse.quote(keyword)) + variant
@@ -172,6 +230,35 @@ def main():
             top.append(it)
         run_top[slug] = (keyword, top[:limit])
 
+    # 外部附加源（TokyoTosho 等）：无需关键词，独立抓取
+    for ef in cfg.get("extra_feeds", []):
+        slug = ef["slug"]
+        print(f"📡 [extra:{slug}] {ef['url']}")
+        raw = fetch(ef["url"])
+        if raw is None:
+            print(f"   ✗ 抓取失败: {ef['url']}")
+            continue
+        if ef.get("type") == "tokyotosho":
+            got = parse_tokyotosho(raw, slug)
+        else:
+            got = parse_feed(raw, slug)
+        print(f"   ✓ {len(got)} 条")
+        # 标题命中现有中文关键词的，归入对应分类
+        cn_kws = [k["keyword"] for k in cfg["keywords"] if not k.get("external")]
+        for it in got:
+            hits = [k for k in cn_kws if k in it["name"]]
+            if hits:
+                it["keywords_extra"] = hits
+        seen = set()
+        top = []
+        for it in sorted(got, key=lambda x: -x["seeders"]):
+            if it["infoHash"] in seen:
+                continue
+            seen.add(it["infoHash"])
+            top.append(it)
+        run_top[slug] = (slug, top[:limit])
+        time.sleep(1)
+
     if all(not t for _, t in run_top.values()) and old_items:
         print("⚠️ 全部源失败，沿用已有 catalog")
         return 0
@@ -190,17 +277,18 @@ def main():
     for slug, (keyword, tops) in run_top.items():
         for it in tops:
             ih = it["infoHash"]
+            extra_kw = set(it.pop("keywords_extra", []))
             prev = pool.get(ih) or old_items.get(ih)
             if prev:
                 it["first_seen"] = prev.get("first_seen", it["first_seen"])
-                it["keywords"] = sorted(set(prev.get("keywords", [])) | {keyword})
+                it["keywords"] = sorted(set(prev.get("keywords", [])) | {keyword} | extra_kw)
                 # 保留已抓取的封面/状态（RSS 描述里基本无图，重抓会覆盖为空）
                 if not it.get("poster") and prev.get("poster"):
                     it["poster"] = prev["poster"]
                 if prev.get("cover_status"):
                     it["cover_status"] = prev["cover_status"]
             else:
-                it["keywords"] = [keyword]
+                it["keywords"] = sorted({keyword} | extra_kw)
                 total_new += 1
             pool[ih] = it
 

@@ -45,6 +45,12 @@
    "keyword": "空姐",
    "slug": "kongjie",
    "catalog_name": "空姐 · Top 150"
+  },
+  {
+   "keyword": "tt-jav",
+   "slug": "tt-jav",
+   "catalog_name": "JAV · TokyoTosho",
+   "external": true
   }
  ],
  "per_keyword_limit": 150,
@@ -52,5 +58,12 @@
   "",
   "&c=2_1",
   "&c=2_2"
+ ],
+ "extra_feeds": [
+  {
+   "slug": "tt-jav",
+   "type": "tokyotosho",
+   "url": "https://www.tokyotosho.info/rss.php?filter=15&entries=n300"
+  }
  ]
 }
