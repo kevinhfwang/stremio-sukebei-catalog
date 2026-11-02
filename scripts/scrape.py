@@ -34,6 +34,14 @@ DEFAULT_CONFIG = {
 UA = ("Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) "
       "AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36")
 
+# 单文件压缩包源：标题带 .rar/.zip 等扩展名（多文件包标题看不出内容，不在此列）
+ARCHIVE_RE = re.compile(r"\.(zip|rar|7z|tar|gz)(?=[\s\)\]】」』，,。.!！?？;\-]|$)", re.I)
+SKIPPED_ARCHIVES = []
+
+
+def is_archive_name(name):
+    return bool(ARCHIVE_RE.search(name or ""))
+
 
 def now_iso():
     return datetime.now(timezone.utc).isoformat()
@@ -101,6 +109,9 @@ def parse_feed(raw, keyword):
         title = d.get("title", "")
         # nyaa RSS 转义引号，还原显示
         title = title.replace("&quot;", '"').replace("&amp;", "&").replace("&#34;", '"')
+        if is_archive_name(title):
+            SKIPPED_ARCHIVES.append(title)
+            continue
         try:
             seeders = int(d.get("seeders", "0"))
         except ValueError:
@@ -159,6 +170,9 @@ def parse_tokyotosho(raw, keyword):
         if ms:
             size = ms.group(1).strip()
         title = title.replace("&quot;", '"').replace("&amp;", "&").replace("&#34;", '"')
+        if is_archive_name(title):
+            SKIPPED_ARCHIVES.append(title)
+            continue
         items.append({
             "id": h,
             "name": title,
@@ -266,13 +280,19 @@ def main():
     # 合并持久池：近 30 天的旧条目 + 本次新条目（infoHash 全局去重，保留 first_seen）
     cutoff = time.time() - 30 * 86400
     pool = {}
+    purged = 0
     for ih, it in old_items.items():
+        if is_archive_name(it.get("name", "")):
+            purged += 1
+            continue
         try:
             fs = datetime.fromisoformat(it.get("first_seen", "1970-01-01")).timestamp()
         except ValueError:
             fs = 0
         if fs > cutoff:
             pool[ih] = it
+    if purged:
+        print(f"🗑 清理 zip/rar 单包源 {purged} 条")
 
     for slug, (keyword, tops) in run_top.items():
         for it in tops:
@@ -321,6 +341,8 @@ def main():
     print(f"\n✅ 共 {len(items)} 部（新增 {total_new}），catalogs: "
           + ", ".join(f"{s}={len(v)}" for s, v in catalogs.items()))
     print(f"✅ 已保存 {CATALOG_FILE}")
+    if SKIPPED_ARCHIVES:
+        print(f"🗑 抓取时跳过 zip/rar 单包源 {len(SKIPPED_ARCHIVES)} 条")
     if failed:
         print(f"⚠️ 失败关键词: {', '.join(failed)}")
     return 0
