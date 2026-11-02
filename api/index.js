@@ -104,7 +104,24 @@ async function rdResolve(hash, key) {
   try {
     const lk = hash.toLowerCase();
     let e = rdIdCache.get(lk);
+    if (e && Date.now() - e.at > 24 * 3600 * 1000) { rdIdCache.delete(lk); e = null; }
     const _vext = /\.(mkv|mp4|avi|mov|wmv|ts|m4v|mpg|webm)$/i;
+
+    // 内存缓存不可靠（serverless 多实例/冷启动就丢），addMagnet 前必须查 RD 防重复建任务
+    if (!e) {
+      let page = 1, ex = null;
+      while (page <= 10 && !ex) {
+        const list = await rdApi(`/torrents?page=${page}&limit=100`, key);
+        if (!list || !list.length) break;
+        ex = list.find((t) => (t.hash || "").toLowerCase() === lk) || null;
+        if (list.length < 100) break;
+        page++;
+      }
+      if (ex) {
+        e = { id: ex.id, at: Date.now() };
+        rdIdCache.set(lk, e);
+      }
+    }
 
     // 新任务流程：addMagnet → 等元数据 → 只勾选视频文件（前6大）→ RD 云端只下视频
     const addAndSelect = async () => {
@@ -176,7 +193,7 @@ async function rdResolve(hash, key) {
     };
 
     let info = null;
-    if (!e || Date.now() - e.at > 24 * 3600 * 1000) {
+    if (!e) {
       const r = await addAndSelect();
       if (r.error) return r;
       info = r.info;
@@ -371,7 +388,7 @@ function getBuilder() {
       const keywords = (cat.config && cat.config.keywords) || [];
       const manifest = {
         id: "com.kevinhfwang.sukebei-catalog",
-        version: "1.2.5",
+        version: "1.2.6",
         name: "Sukebei 精选",
         description:
           "RSS 精选 Top（每 8 小时更新）· 安装页可配置 Real-Debrid key 云端秒播，未配置则返回 infoHash 走 P2P/客户端 RD",
