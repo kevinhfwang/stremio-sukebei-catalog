@@ -258,10 +258,10 @@ async function rdResolve(hash, key) {
     }
     if (!info) return { error: "RD 任务信息为空" };
     if (info.status !== "downloaded") {
-      return { error: `RD 云端状态=${info.status}（下载完成后重试）` };
+      return { error: `⏳ ${info.status}（云端就绪后重试）` };
     }
     if (!Array.isArray(info.links) || !info.links.length) {
-      return { error: "RD 云端无直链" };
+      return { error: "云端无直链" };
     }
       // links[] 与 files[] 中 selected=true 的条目一一对应（RD 直链 URL 无后缀，必须靠 files[].path 判断）
       const files = Array.isArray(info.files) ? info.files : [];
@@ -354,7 +354,7 @@ async function buildStreams(item, conf) {
     if (rd.streams && rd.streams.length) {
       streams.push(...rd.streams);
     } else {
-      rdNote = `⚠️ RD未生效：${rd.error || "未知原因"}\n`;
+      rdNote = `⚠️ ${rd.error || "未知原因"}\n`;
       console.log(`[rd] 失败 ${item.infoHash.slice(0, 8)}: ${rd.error || "未知原因"}`);
     }
   }
@@ -395,7 +395,7 @@ function getBuilder() {
       const keywords = (cat.config && cat.config.keywords) || [];
       const manifest = {
         id: "com.kevinhfwang.sukebei-catalog",
-        version: "1.2.7",
+        version: "1.2.8",
         name: "Sukebei 精选",
         description:
           "RSS 精选 Top（每 8 小时更新）· 安装页可配置 Real-Debrid key 云端秒播，未配置则返回 infoHash 走 P2P/客户端 RD",
