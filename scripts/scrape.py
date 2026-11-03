@@ -223,16 +223,16 @@ def main():
         for vi, variant in enumerate(variants, 1):
             url = template.format(keyword=urllib.parse.quote(keyword)) + variant
             print(f"📡 [{slug}] 变体{vi} ({variant or '全部'})")
-            raw = fetch(url)
+            raw = fetch(url, attempts=4)
             if raw is None:
                 print(f"   ✗ 抓取失败: {url}")
-                if vi == 1:
-                    failed.append(keyword)
-                break
+                continue
             got = parse_feed(raw, keyword)
             print(f"   ✓ {len(got)} 条")
             collected.extend(got)
             time.sleep(1)
+        if not collected:
+            failed.append(keyword)
 
         # 按 seeders 排序取本次 Top N
         seen = set()
