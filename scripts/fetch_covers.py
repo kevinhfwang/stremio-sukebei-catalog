@@ -488,7 +488,9 @@ def main():
     javdb_done = rd_done = bt_done = snap_done = 0
 
     def mark_failed(it):
-        tries = int(it.get("cover_status", "failed:0").split(":")[-1]) + 1 if it.get("cover_status") else 1
+        prev_status = it.get("cover_status") or ""
+        m = re.search(r"failed:(\d+)$", prev_status)
+        tries = int(m.group(1)) + 1 if m else 1
         it["cover_status"] = f"failed:{tries}" if tries < 2 else "failed:9"
 
     def try_push(it, content, source):

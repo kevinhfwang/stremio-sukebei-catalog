@@ -38,6 +38,7 @@ jobs:
           RD_TOKEN: ${{ secrets.RD_TOKEN }}
           COVERS_PAT: ${{ secrets.COVERS_PAT }}
           COVERS_REPO: kevinhfwang/sukebei-covers
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: /usr/bin/python3 scripts/fetch_covers.py
 
       - name: Commit catalog
