@@ -1,5 +1,5 @@
 {
- "updated_at": "2026-11-06T17:07:58+00:00",
+ "updated_at": "2026-11-06T22:52:02+00:00",
  "config": {
   "feed_template": "https://sukebei.nyaa.si/?page=rss&q={keyword}&s=seeders&o=desc",
   "per_keyword_limit": 150,
@@ -18085,7 +18085,7 @@
    "keywords": [
     "泄密"
    ],
-   "cover_status": "failed:1"
+   "cover_status": "failed:9"
   },
   "c73c2ff81a70ff7d54afa03f1a708d973d73d526": {
    "id": "c73c2ff81a70ff7d54afa03f1a708d973d73d526",
@@ -18194,7 +18194,8 @@
    "first_seen": "2026-11-05T16:09:53.655985+00:00",
    "keywords": [
     "网红"
-   ]
+   ],
+   "cover_status": "failed:1"
   },
   "04dba0fc47e959502468ed95cda2238a64659318": {
    "id": "04dba0fc47e959502468ed95cda2238a64659318",
@@ -18519,7 +18520,8 @@
    "first_seen": "2026-11-05T16:10:08.526756+00:00",
    "keywords": [
     "反差"
-   ]
+   ],
+   "cover_status": "failed:1"
   },
   "5e4c675d71028af822326f090d29fe18b75823b3": {
    "id": "5e4c675d71028af822326f090d29fe18b75823b3",
@@ -18837,7 +18839,8 @@
    "first_seen": "2026-11-06T05:09:32.987252+00:00",
    "keywords": [
     "网红"
-   ]
+   ],
+   "cover_status": "noimg"
   },
   "50da2f2d2f74ae2549bbac3b2277beeaee816122": {
    "id": "50da2f2d2f74ae2549bbac3b2277beeaee816122",
@@ -18959,7 +18962,8 @@
    "first_seen": "2026-11-06T05:09:38.592186+00:00",
    "keywords": [
     "学生"
-   ]
+   ],
+   "cover_status": "failed:1"
   },
   "33f84639fabdfa512bca21502f5b4aca3ebbf6fc": {
    "id": "33f84639fabdfa512bca21502f5b4aca3ebbf6fc",
@@ -18974,7 +18978,8 @@
    "first_seen": "2026-11-06T05:09:38.592197+00:00",
    "keywords": [
     "学生"
-   ]
+   ],
+   "cover_status": "noimg"
   },
   "71758b3b7a097091474dd645456ecc1637fad3b2": {
    "id": "71758b3b7a097091474dd645456ecc1637fad3b2",
