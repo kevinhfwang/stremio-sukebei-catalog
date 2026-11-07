@@ -1,5 +1,5 @@
 {
- "updated_at": "2026-11-07T16:10:41+00:00",
+ "updated_at": "2026-11-07T21:12:44+00:00",
  "config": {
   "feed_template": "https://sukebei.nyaa.si/?page=rss&q={keyword}&s=seeders&o=desc",
   "per_keyword_limit": 150,
@@ -18538,7 +18538,8 @@
    "first_seen": "2026-11-05T16:10:08.526841+00:00",
    "keywords": [
     "反差"
-   ]
+   ],
+   "cover_status": "noimg"
   },
   "9078580b8f2e4e8878aec4c250ab5e1d8fd406fa": {
    "id": "9078580b8f2e4e8878aec4c250ab5e1d8fd406fa",
@@ -18553,7 +18554,8 @@
    "first_seen": "2026-11-05T16:10:08.526858+00:00",
    "keywords": [
     "反差"
-   ]
+   ],
+   "cover_status": "noimg"
   },
   "d83ca3411bbbb0b7eb98808bf4acb882a5743cd3": {
    "id": "d83ca3411bbbb0b7eb98808bf4acb882a5743cd3",
