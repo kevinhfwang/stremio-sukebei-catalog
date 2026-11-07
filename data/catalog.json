@@ -1,5 +1,5 @@
 {
- "updated_at": "2026-11-06T22:52:02+00:00",
+ "updated_at": "2026-11-07T06:13:25+00:00",
  "config": {
   "feed_template": "https://sukebei.nyaa.si/?page=rss&q={keyword}&s=seeders&o=desc",
   "per_keyword_limit": 150,
@@ -109,7 +109,7 @@
    "url": "https://sukebei.nyaa.si/?page=rss&q=tt-jav&s=seeders&o=desc"
   }
  ],
- "count": 1247,
+ "count": 1248,
  "items": {
   "91536c64b0e09ad2c7647837633ee3f93ee9c14d": {
    "id": "91536c64b0e09ad2c7647837633ee3f93ee9c14d",
@@ -18195,7 +18195,7 @@
    "keywords": [
     "网红"
    ],
-   "cover_status": "failed:1"
+   "cover_status": "failed:9"
   },
   "04dba0fc47e959502468ed95cda2238a64659318": {
    "id": "04dba0fc47e959502468ed95cda2238a64659318",
@@ -18521,7 +18521,7 @@
    "keywords": [
     "反差"
    ],
-   "cover_status": "failed:1"
+   "cover_status": "failed:9"
   },
   "5e4c675d71028af822326f090d29fe18b75823b3": {
    "id": "5e4c675d71028af822326f090d29fe18b75823b3",
@@ -18963,7 +18963,7 @@
    "keywords": [
     "学生"
    ],
-   "cover_status": "failed:1"
+   "cover_status": "failed:9"
   },
   "33f84639fabdfa512bca21502f5b4aca3ebbf6fc": {
    "id": "33f84639fabdfa512bca21502f5b4aca3ebbf6fc",
@@ -19099,7 +19099,8 @@
    "first_seen": "2026-11-06T05:09:44.406974+00:00",
    "keywords": [
     "直播"
-   ]
+   ],
+   "cover_status": "noimg"
   },
   "fe001c4863c5556da5078a199750a8182dc82cac": {
    "id": "fe001c4863c5556da5078a199750a8182dc82cac",
@@ -19142,6 +19143,21 @@
    "poster": "",
    "keyword": "tt-jav",
    "first_seen": "2026-11-06T16:31:36.422176+00:00",
+   "keywords": [
+    "tt-jav"
+   ]
+  },
+  "6dcfddaf58eb9f65e35ecb10eb1baafad0ddcf3e": {
+   "id": "6dcfddaf58eb9f65e35ecb10eb1baafad0ddcf3e",
+   "name": "[HispaJAV] YOCH-012 - Aliviando Sexualmente a mi Hijo Nini (Miki Yamase) [1080p] [786273E9].mkv",
+   "infoHash": "6dcfddaf58eb9f65e35ecb10eb1baafad0ddcf3e",
+   "seeders": 1,
+   "nyaa_category": "JAV",
+   "link": "https://sukebei.nyaa.si/download/4755303.torrent",
+   "size": "1.56GB",
+   "poster": "",
+   "keyword": "tt-jav",
+   "first_seen": "2026-11-07T05:34:47.634727+00:00",
    "keywords": [
     "tt-jav"
    ]
@@ -20215,7 +20231,8 @@
    "409b24bbe527d26cda1c0ef365c72bf9b2a404d4",
    "51ccefb1a82de1a31d019de6933376a47502912d",
    "65986250a45a1fdf557e22a58e7f0ab1fc60aeed",
-   "a11f05294ddbaf1b4d3d8ca8a262cb7af11f071e"
+   "a11f05294ddbaf1b4d3d8ca8a262cb7af11f071e",
+   "6dcfddaf58eb9f65e35ecb10eb1baafad0ddcf3e"
   ]
  }
 }
