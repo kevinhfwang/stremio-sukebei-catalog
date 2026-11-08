@@ -1,5 +1,5 @@
 {
- "updated_at": "2026-11-08T05:50:50+00:00",
+ "updated_at": "2026-11-08T16:05:29+00:00",
  "config": {
   "feed_template": "https://sukebei.nyaa.si/?page=rss&q={keyword}&s=seeders&o=desc",
   "per_keyword_limit": 150,
