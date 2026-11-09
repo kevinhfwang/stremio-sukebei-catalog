@@ -1,5 +1,5 @@
 {
- "updated_at": "2026-11-09T06:03:21+00:00",
+ "updated_at": "2026-11-09T21:49:36+00:00",
  "config": {
   "feed_template": "https://sukebei.nyaa.si/?page=rss&q={keyword}&s=seeders&o=desc",
   "per_keyword_limit": 150,
@@ -109,7 +109,7 @@
    "url": "https://sukebei.nyaa.si/?page=rss&q=tt-jav&s=seeders&o=desc"
   }
  ],
- "count": 1248,
+ "count": 1249,
  "items": {
   "91536c64b0e09ad2c7647837633ee3f93ee9c14d": {
    "id": "91536c64b0e09ad2c7647837633ee3f93ee9c14d",
@@ -19165,6 +19165,21 @@
    "keywords": [
     "tt-jav"
    ]
+  },
+  "ebcf0f0fab9ebd5912a10b37a542977143170a78": {
+   "id": "ebcf0f0fab9ebd5912a10b37a542977143170a78",
+   "name": "【1080P】舌吻照護 被性騷擾老爺爺騙了生插入幼小子宮快感覺醒！連肛門都舔遍照護濃密陰毛素股！149cm天使的努力侍奉騎乘位中出！",
+   "infoHash": "ebcf0f0fab9ebd5912a10b37a542977143170a78",
+   "seeders": 1,
+   "nyaa_category": "JAV",
+   "link": "https://sukebei.nyaa.si/download/4756911.torrent",
+   "size": "3.94GB",
+   "poster": "",
+   "keyword": "tt-jav",
+   "first_seen": "2026-11-09T21:22:22.881228+00:00",
+   "keywords": [
+    "tt-jav"
+   ]
   }
  },
  "catalogs": {
@@ -20236,7 +20251,8 @@
    "51ccefb1a82de1a31d019de6933376a47502912d",
    "65986250a45a1fdf557e22a58e7f0ab1fc60aeed",
    "a11f05294ddbaf1b4d3d8ca8a262cb7af11f071e",
-   "6dcfddaf58eb9f65e35ecb10eb1baafad0ddcf3e"
+   "6dcfddaf58eb9f65e35ecb10eb1baafad0ddcf3e",
+   "ebcf0f0fab9ebd5912a10b37a542977143170a78"
   ]
  }
 }
