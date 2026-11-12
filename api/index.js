@@ -368,7 +368,43 @@ async function buildStreams(item, conf) {
   return streams;
 }
 
-// ---------- 配置编码（安装页生成） ----------
+// ---------- 配置段编解码 ----------
+//
+// 新版（推荐）：CONFIG_SECRET 环境变量（Vercel env）存在时，配置段是
+// AES-256-GCM 密文 = base64url(iv‖tag‖ct)。无状态、无需存储，天然适配
+// serverless 多实例；拿到安装链接/访问日志的人无法解出 RD key，
+// 只有服务器持有 secret。换 secret = 旧链接全部作废（吊销粒度为全局）。
+//
+// 兼容：未设 secret 或解密失败时，回落旧版 base64url(JSON) 明文段解析，
+// 旧安装链接不断（但其中的 key 是明文，应重置并重新生成链接）。
+const crypto = require("crypto");
+const CONF_SECRET = process.env.CONFIG_SECRET || "";
+
+function confKey() {
+  return crypto.createHash("sha256").update(CONF_SECRET, "utf8").digest();
+}
+
+function encryptConf(obj) {
+  const iv = crypto.randomBytes(12);
+  const cipher = crypto.createCipheriv("aes-256-gcm", confKey(), iv);
+  const ct = Buffer.concat([cipher.update(JSON.stringify(obj), "utf8"), cipher.final()]);
+  return Buffer.concat([iv, cipher.getAuthTag(), ct]).toString("base64url");
+}
+
+function decryptConf(seg) {
+  if (!CONF_SECRET) return null;
+  try {
+    const raw = Buffer.from(seg, "base64url");
+    const iv = raw.subarray(0, 12);
+    const tag = raw.subarray(12, 28);
+    const ct = raw.subarray(28);
+    const d = crypto.createDecipheriv("aes-256-gcm", confKey(), iv);
+    d.setAuthTag(tag);
+    return JSON.parse(Buffer.concat([d.update(ct), d.final()]).toString("utf8"));
+  } catch (_) {
+    return null;
+  }
+}
 
 function encodeConf(obj) {
   return Buffer.from(JSON.stringify(obj))
@@ -379,6 +415,9 @@ function encodeConf(obj) {
 }
 
 function parseConf(seg) {
+  // 先尝试新版解密，再回落旧版明文 base64（旧安装链接兼容）
+  const dec = decryptConf(seg);
+  if (dec) return dec;
   try {
     const b64 = seg.replace(/-/g, "+").replace(/_/g, "/");
     return JSON.parse(Buffer.from(b64, "base64").toString("utf8"));
@@ -395,7 +434,7 @@ function getBuilder() {
       const keywords = (cat.config && cat.config.keywords) || [];
       const manifest = {
         id: "com.kevinhfwang.sukebei-catalog",
-        version: "1.2.8",
+        version: "1.2.9",
         name: "Sukebei 精选",
         description:
           "RSS 精选 Top（每 8 小时更新）· 安装页可配置 Real-Debrid key 云端秒播，未配置则返回 infoHash 走 P2P/客户端 RD",
@@ -462,14 +501,16 @@ button{width:100%;padding:12px;border:0;border-radius:8px;background:#4ea1ff;col
 <p class="warn" id="curkey">${prefillKey ? "当前已配置 RD key（已填入下方输入框），确认无误点按钮生成安装链接即可。" : ""}</p>
 <button onclick="go()">生成安装链接</button>
 <div id="out"></div>
-<p class="warn">注意：key 会编码在安装 URL 里（仅自己设备使用）。</p>
+<p class="warn">✅ 安装 URL 只含加密配置段，不含明文 key（服务器端加密，日志/分享链接均无法解出）。旧版明文链接仍可用，但请尽快重新生成并去 real-debrid.com/apitoken 重置 key。</p>
 <script>
-function go(){
+async function go(){
   const key=document.getElementById('key').value.trim();
   let url='https://${host}/manifest.json';
   if(key){
-    const conf=btoa(unescape(encodeURIComponent(JSON.stringify({rd:key})))).replace(/\\+/g,'-').replace(/\\//g,'_').replace(/=+$/,'');
-    url='https://${host}/'+conf+'/manifest.json';
+    const resp=await fetch('/api/conf',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({rd:key})});
+    const data=await resp.json();
+    if(!resp.ok||!data.conf){document.getElementById('out').style.display='block';document.getElementById('out').textContent='生成失败：'+(data.error||resp.status);return;}
+    url='https://${host}/'+data.conf+'/manifest.json';
   }
   const stremio=url.replace(/^https?:\\/\\//,'stremio://');
   document.getElementById('out').style.display='block';
@@ -490,6 +531,27 @@ module.exports = async (req, res) => {
   let path = req.url.split("?")[0];
   // 安装页
   if (path === "/" || path === "") return landing(req, res);
+
+  // 配置颁发：安装页 POST {rd:key} → 返回配置段。设了 CONFIG_SECRET 时为
+  // AES-256-GCM 密文段（URL 不含明文 key）；未设则回落旧版明文 base64 段。
+  if (path === "/api/conf" && req.method === "POST") {
+    let body = "";
+    try {
+      for await (const chunk of req) body += chunk;
+      const { rd } = JSON.parse(body || "{}");
+      const key = String(rd || "").trim();
+      if (key.length < 10) {
+        res.statusCode = 400;
+        return res.end(JSON.stringify({ error: "invalid rd key" }));
+      }
+      const conf = CONF_SECRET ? encryptConf({ rd: key }) : encodeConf({ rd: key });
+      res.setHeader("Content-Type", "application/json");
+      return res.end(JSON.stringify({ conf }));
+    } catch (_) {
+      res.statusCode = 400;
+      return res.end(JSON.stringify({ error: "bad json body" }));
+    }
+  }
 
   // 可选配置前缀：/<conf>/manifest.json、/<conf>/configure 或 /<conf>/{catalog,stream,meta}/...
   let conf = null;
