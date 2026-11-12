@@ -1,5 +1,5 @@
 {
- "updated_at": "2026-11-12T07:07:53+00:00",
+ "updated_at": "2026-11-12T09:16:07+00:00",
  "config": {
   "feed_template": "https://sukebei.nyaa.si/?page=rss&q={keyword}&s=seeders&o=desc",
   "per_keyword_limit": 150,
@@ -109,7 +109,7 @@
    "url": "https://sukebei.nyaa.si/?page=rss&q=tt-jav&s=seeders&o=desc"
   }
  ],
- "count": 1249,
+ "count": 1251,
  "items": {
   "91536c64b0e09ad2c7647837633ee3f93ee9c14d": {
    "id": "91536c64b0e09ad2c7647837633ee3f93ee9c14d",
@@ -19180,6 +19180,36 @@
    "keywords": [
     "tt-jav"
    ]
+  },
+  "669d9e7df3ca5143906f2e4092df614cd6ec4bdb": {
+   "id": "669d9e7df3ca5143906f2e4092df614cd6ec4bdb",
+   "name": "[HispaJAV] PFAS-043 - Convivencia entre Mujeres (Kyoko Maki, Sumire Mihara) [2160p] [75EF9260].mkv",
+   "infoHash": "669d9e7df3ca5143906f2e4092df614cd6ec4bdb",
+   "seeders": 1,
+   "nyaa_category": "JAV",
+   "link": "https://sukebei.nyaa.si/download/4758828.torrent",
+   "size": "6.84GB",
+   "poster": "",
+   "keyword": "tt-jav",
+   "first_seen": "2026-11-12T08:48:49.797959+00:00",
+   "keywords": [
+    "tt-jav"
+   ]
+  },
+  "5830568dd4c41a5095aedb98cc84a74222e89879": {
+   "id": "5830568dd4c41a5095aedb98cc84a74222e89879",
+   "name": "[HispaJAV] PFAS-040 - Trío Sexual en el Tatami (Noa Amano, Rion Izumi, Shiori Nogami) [2160p] [90AB749C].mkv",
+   "infoHash": "5830568dd4c41a5095aedb98cc84a74222e89879",
+   "seeders": 1,
+   "nyaa_category": "JAV",
+   "link": "https://sukebei.nyaa.si/download/4758827.torrent",
+   "size": "5.08GB",
+   "poster": "",
+   "keyword": "tt-jav",
+   "first_seen": "2026-11-12T08:48:49.798013+00:00",
+   "keywords": [
+    "tt-jav"
+   ]
   }
  },
  "catalogs": {
@@ -20252,7 +20282,9 @@
    "65986250a45a1fdf557e22a58e7f0ab1fc60aeed",
    "a11f05294ddbaf1b4d3d8ca8a262cb7af11f071e",
    "6dcfddaf58eb9f65e35ecb10eb1baafad0ddcf3e",
-   "ebcf0f0fab9ebd5912a10b37a542977143170a78"
+   "ebcf0f0fab9ebd5912a10b37a542977143170a78",
+   "669d9e7df3ca5143906f2e4092df614cd6ec4bdb",
+   "5830568dd4c41a5095aedb98cc84a74222e89879"
   ]
  }
 }
