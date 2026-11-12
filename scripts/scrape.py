@@ -70,7 +70,7 @@ def fetch(url, attempts=3, timeout=25):
             with urllib.request.urlopen(req, timeout=timeout) as r:
                 return r.read()
         except Exception as e:
-            wait = 2 ** i
+            wait = min(2 ** i, 30)
             print(f"   ⚠️ 第{i+1}次失败: {e}，{wait}s 后重试")
             time.sleep(wait)
     return None
@@ -223,7 +223,9 @@ def main():
         for vi, variant in enumerate(variants, 1):
             url = template.format(keyword=urllib.parse.quote(keyword)) + variant
             print(f"📡 [{slug}] 变体{vi} ({variant or '全部'})")
-            raw = fetch(url, attempts=4)
+            # nyaa 被 Cloudflare 按 IP 段封禁时整个窗口内全失败（短退避全撞同一窗口），
+            # attempts 给足 6 次、退避封顶 30s，把重试时间跨度拉长到 ~1 分钟再放弃
+            raw = fetch(url, attempts=6)
             if raw is None:
                 print(f"   ✗ 抓取失败: {url}")
                 continue

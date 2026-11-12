@@ -31,7 +31,20 @@ jobs:
         run: python scripts/scrape.py
 
       - name: Install libtorrent + ffmpeg (BT 直抽/视频抽帧)
-        run: sudo apt-get update -qq && sudo apt-get install -y -qq python3-libtorrent ffmpeg
+        run: |
+          # runner DNS 偶发瞬断（security.ubuntu.com resolve 失败）会让单次 apt 直接 exit 100，
+          # 加重试循环兜底：清 lists + --fix-missing，3 次机会，最后校验二进制真的装上了
+          for i in 1 2 3; do
+            sudo apt-get clean
+            sudo rm -rf /var/lib/apt/lists/*
+            if sudo apt-get update -qq && sudo apt-get install -y -qq --fix-missing python3-libtorrent ffmpeg; then
+              break
+            fi
+            echo "::warning::apt attempt $i failed, retrying in 30s..."
+            sleep 30
+          done
+          dpkg -s python3-libtorrent >/dev/null
+          ffmpeg -version >/dev/null
 
       - name: Fetch covers (JavDB / BitTorrent / Real-Debrid)
         env:
