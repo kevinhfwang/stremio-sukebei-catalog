@@ -1,5 +1,5 @@
 {
- "updated_at": "2026-11-13T07:11:22+00:00",
+ "updated_at": "2026-11-13T17:58:47+00:00",
  "config": {
   "feed_template": "https://sukebei.nyaa.si/?page=rss&q={keyword}&s=seeders&o=desc",
   "per_keyword_limit": 150,
@@ -109,7 +109,7 @@
    "url": "https://sukebei.nyaa.si/?page=rss&q=tt-jav&s=seeders&o=desc"
   }
  ],
- "count": 1251,
+ "count": 1252,
  "items": {
   "91536c64b0e09ad2c7647837633ee3f93ee9c14d": {
    "id": "91536c64b0e09ad2c7647837633ee3f93ee9c14d",
@@ -19210,6 +19210,21 @@
    "keywords": [
     "tt-jav"
    ]
+  },
+  "3eda6afeb0f5635a5d29d3c76db62554d9037868": {
+   "id": "3eda6afeb0f5635a5d29d3c76db62554d9037868",
+   "name": "【VR】【8K】與愛撒嬌姪女在被窩裡緊貼著發出黏稠聲音 品嘗光滑小穴玷污的中出SEX",
+   "infoHash": "3eda6afeb0f5635a5d29d3c76db62554d9037868",
+   "seeders": 1,
+   "nyaa_category": "JAV",
+   "link": "https://sukebei.nyaa.si/download/4759917.torrent",
+   "size": "16.52GB",
+   "poster": "",
+   "keyword": "tt-jav",
+   "first_seen": "2026-11-13T17:31:01.612132+00:00",
+   "keywords": [
+    "tt-jav"
+   ]
   }
  },
  "catalogs": {
@@ -20284,7 +20299,8 @@
    "6dcfddaf58eb9f65e35ecb10eb1baafad0ddcf3e",
    "ebcf0f0fab9ebd5912a10b37a542977143170a78",
    "669d9e7df3ca5143906f2e4092df614cd6ec4bdb",
-   "5830568dd4c41a5095aedb98cc84a74222e89879"
+   "5830568dd4c41a5095aedb98cc84a74222e89879",
+   "3eda6afeb0f5635a5d29d3c76db62554d9037868"
   ]
  }
 }
