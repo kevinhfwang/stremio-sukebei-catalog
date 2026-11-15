@@ -1,5 +1,5 @@
 {
- "updated_at": "2026-11-15T15:54:52+00:00",
+ "updated_at": "2026-11-15T23:00:14+00:00",
  "config": {
   "feed_template": "https://sukebei.nyaa.si/?page=rss&q={keyword}&s=seeders&o=desc",
   "per_keyword_limit": 150,
@@ -109,7 +109,7 @@
    "url": "https://sukebei.nyaa.si/?page=rss&q=tt-jav&s=seeders&o=desc"
   }
  ],
- "count": 1617,
+ "count": 1622,
  "items": {
   "91536c64b0e09ad2c7647837633ee3f93ee9c14d": {
    "id": "91536c64b0e09ad2c7647837633ee3f93ee9c14d",
@@ -19432,13 +19432,13 @@
    "nyaa_category": "Real Life - Videos",
    "link": "https://sukebei.nyaa.si/view/4760945",
    "size": "557.6 MiB",
-   "poster": "",
+   "poster": "https://github.com/kevinhfwang/stremio-sukebei-catalog/releases/download/covers/3a16124a.jpg",
    "keyword": "泄密",
    "first_seen": "2026-11-15T04:51:05.883899+00:00",
    "keywords": [
     "泄密"
    ],
-   "cover_status": "failed:1"
+   "cover_status": "bt"
   },
   "2b474a427a60ee421d6d5a7c7595a52f93f2aeaf": {
    "id": "2b474a427a60ee421d6d5a7c7595a52f93f2aeaf",
@@ -19468,7 +19468,8 @@
    "first_seen": "2026-11-15T04:51:05.884227+00:00",
    "keywords": [
     "泄密"
-   ]
+   ],
+   "cover_status": "noimg"
   },
   "beb9677247ab3953924bb0441b7f1be689edfeae": {
    "id": "beb9677247ab3953924bb0441b7f1be689edfeae",
@@ -20547,14 +20548,14 @@
    "nyaa_category": "Real Life - Videos",
    "link": "https://sukebei.nyaa.si/view/4761321",
    "size": "45.2 GiB",
-   "poster": "",
+   "poster": "https://github.com/kevinhfwang/stremio-sukebei-catalog/releases/download/covers/a6f4eb3b.jpg",
    "keyword": "直播",
    "first_seen": "2026-11-15T04:51:11.332311+00:00",
    "keywords": [
     "国产",
     "直播"
    ],
-   "cover_status": "failed:1"
+   "cover_status": "bt"
   },
   "866a331a708b43c374c368e6690c9bb2baa11013": {
    "id": "866a331a708b43c374c368e6690c9bb2baa11013",
@@ -24085,13 +24086,13 @@
    "nyaa_category": "Real Life - Videos",
    "link": "https://sukebei.nyaa.si/view/4762132",
    "size": "388.8 MiB",
-   "poster": "",
+   "poster": "https://github.com/kevinhfwang/stremio-sukebei-catalog/releases/download/covers/3967c412.jpg",
    "keyword": "泄密",
    "first_seen": "2026-11-15T15:21:25.723348+00:00",
    "keywords": [
     "泄密"
    ],
-   "cover_status": "failed:1"
+   "cover_status": "bt"
   },
   "8883f50b341f83dee2ad3a795e5b8855aa765c16": {
    "id": "8883f50b341f83dee2ad3a795e5b8855aa765c16",
@@ -24101,13 +24102,13 @@
    "nyaa_category": "Real Life - Videos",
    "link": "https://sukebei.nyaa.si/view/4762131",
    "size": "767.4 MiB",
-   "poster": "",
+   "poster": "https://github.com/kevinhfwang/stremio-sukebei-catalog/releases/download/covers/8883f50b.png",
    "keyword": "泄密",
    "first_seen": "2026-11-15T15:21:25.723359+00:00",
    "keywords": [
     "泄密"
    ],
-   "cover_status": "failed:1"
+   "cover_status": "bt"
   },
   "61659f8105aab1b5c5a25e6f797b0fae77f0ffdf": {
    "id": "61659f8105aab1b5c5a25e6f797b0fae77f0ffdf",
@@ -24124,7 +24125,7 @@
     "反差",
     "泄密"
    ],
-   "cover_status": "failed:1"
+   "cover_status": "failed:9"
   },
   "a7928a780ce57b8c1f83f0d4f6758591d729819c": {
    "id": "a7928a780ce57b8c1f83f0d4f6758591d729819c",
@@ -24766,6 +24767,81 @@
    "first_seen": "2026-11-15T15:22:04.537853+00:00",
    "keywords": [
     "空姐"
+   ]
+  },
+  "7d2e9079091190c7d99e90ba01471ddc763b429f": {
+   "id": "7d2e9079091190c7d99e90ba01471ddc763b429f",
+   "name": "__MIAA-629_LTX",
+   "infoHash": "7d2e9079091190c7d99e90ba01471ddc763b429f",
+   "seeders": 1,
+   "nyaa_category": "JAV",
+   "link": "https://www.anirena.com/torrents/01a1dedf-6501-7013-b71d-0a18e91e4e5d.torrent",
+   "size": "1.8GB",
+   "poster": "",
+   "keyword": "tt-jav",
+   "first_seen": "2026-11-15T22:25:03.312551+00:00",
+   "keywords": [
+    "tt-jav"
+   ]
+  },
+  "23aa93370123811ba78e3f63b6126b4e825c4caa": {
+   "id": "23aa93370123811ba78e3f63b6126b4e825c4caa",
+   "name": "___192-WAAA_LTX",
+   "infoHash": "23aa93370123811ba78e3f63b6126b4e825c4caa",
+   "seeders": 1,
+   "nyaa_category": "JAV",
+   "link": "https://www.anirena.com/torrents/01a1ded6-9156-7652-9512-a8f3fc92c108.torrent",
+   "size": "3.01GB",
+   "poster": "",
+   "keyword": "tt-jav",
+   "first_seen": "2026-11-15T22:25:03.312594+00:00",
+   "keywords": [
+    "tt-jav"
+   ]
+  },
+  "73456438b012f31aa93ae84a39a62a4f7ee16e9d": {
+   "id": "73456438b012f31aa93ae84a39a62a4f7ee16e9d",
+   "name": "___114-MIDV_LTX",
+   "infoHash": "73456438b012f31aa93ae84a39a62a4f7ee16e9d",
+   "seeders": 1,
+   "nyaa_category": "JAV",
+   "link": "https://www.anirena.com/torrents/01a1dec1-10d8-7668-9d70-beff53746a49.torrent",
+   "size": "1.89GB",
+   "poster": "",
+   "keyword": "tt-jav",
+   "first_seen": "2026-11-15T22:25:03.312613+00:00",
+   "keywords": [
+    "tt-jav"
+   ]
+  },
+  "49c9b5ef7d6dfc8136395ee65d4bcbb3dc607a72": {
+   "id": "49c9b5ef7d6dfc8136395ee65d4bcbb3dc607a72",
+   "name": "【1080P】 有點囂張的野生爸爸活女子帶回家。因為態度惡劣用睡眠強●讓她理解！",
+   "infoHash": "49c9b5ef7d6dfc8136395ee65d4bcbb3dc607a72",
+   "seeders": 1,
+   "nyaa_category": "JAV",
+   "link": "https://sukebei.nyaa.si/download/4761807.torrent",
+   "size": "6.47GB",
+   "poster": "",
+   "keyword": "tt-jav",
+   "first_seen": "2026-11-15T22:25:03.312634+00:00",
+   "keywords": [
+    "tt-jav"
+   ]
+  },
+  "86a2391aa6340f4309c6668e94a1cfee5ccff742": {
+   "id": "86a2391aa6340f4309c6668e94a1cfee5ccff742",
+   "name": "___ROYD-327_LTX",
+   "infoHash": "86a2391aa6340f4309c6668e94a1cfee5ccff742",
+   "seeders": 1,
+   "nyaa_category": "JAV",
+   "link": "https://www.anirena.com/torrents/01a1dd97-ebb7-71a0-9d53-dd5e8252492c.torrent",
+   "size": "2.1GB",
+   "poster": "",
+   "keyword": "tt-jav",
+   "first_seen": "2026-11-15T22:25:03.312651+00:00",
+   "keywords": [
+    "tt-jav"
    ]
   }
  },
@@ -25927,7 +26003,12 @@
    "200097f70a14e15e1435acc8b4eef90ad5465814",
    "64c7601f86984a6b0184c353e91c2e7453851fd0",
    "18b9b315045b8f4ee624f1b8d58e6bcfaa8d8a40",
-   "0f3c55d4c7b8c168c5de6f136f735989047b0926"
+   "0f3c55d4c7b8c168c5de6f136f735989047b0926",
+   "7d2e9079091190c7d99e90ba01471ddc763b429f",
+   "23aa93370123811ba78e3f63b6126b4e825c4caa",
+   "73456438b012f31aa93ae84a39a62a4f7ee16e9d",
+   "49c9b5ef7d6dfc8136395ee65d4bcbb3dc607a72",
+   "86a2391aa6340f4309c6668e94a1cfee5ccff742"
   ]
  }
 }
