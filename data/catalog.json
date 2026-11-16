@@ -1,5 +1,5 @@
 {
- "updated_at": "2026-11-16T06:57:39+00:00",
+ "updated_at": "2026-11-16T20:05:24+00:00",
  "config": {
   "feed_template": "https://sukebei.nyaa.si/?page=rss&q={keyword}&s=seeders&o=desc",
   "per_keyword_limit": 150,
@@ -109,7 +109,7 @@
    "url": "https://sukebei.nyaa.si/?page=rss&q=tt-jav&s=seeders&o=desc"
   }
  ],
- "count": 1622,
+ "count": 1626,
  "items": {
   "91536c64b0e09ad2c7647837633ee3f93ee9c14d": {
    "id": "91536c64b0e09ad2c7647837633ee3f93ee9c14d",
@@ -19454,7 +19454,7 @@
    "keywords": [
     "泄密"
    ],
-   "cover_status": "failed:1"
+   "cover_status": "failed:9"
   },
   "dd8ca79b3516ff73aa415eb6e98db408f0b4323d": {
    "id": "dd8ca79b3516ff73aa415eb6e98db408f0b4323d",
@@ -19547,7 +19547,8 @@
    "keywords": [
     "学生",
     "泄密"
-   ]
+   ],
+   "cover_status": "failed:1"
   },
   "9c3e317377a084ab68d79990c05bb0c2d7ed60dc": {
    "id": "9c3e317377a084ab68d79990c05bb0c2d7ed60dc",
@@ -21743,7 +21744,8 @@
    "first_seen": "2026-11-15T04:51:22.379601+00:00",
    "keywords": [
     "学生"
-   ]
+   ],
+   "cover_status": "noimg"
   },
   "8f8e1318b623b37e52db5f88907fc58c15bb4790": {
    "id": "8f8e1318b623b37e52db5f88907fc58c15bb4790",
@@ -22938,7 +22940,8 @@
    "first_seen": "2026-11-15T04:51:33.642149+00:00",
    "keywords": [
     "反差"
-   ]
+   ],
+   "cover_status": "failed:1"
   },
   "17752fa7b626105af858651e5ba91c4852a014c1": {
    "id": "17752fa7b626105af858651e5ba91c4852a014c1",
@@ -24706,13 +24709,13 @@
    "nyaa_category": "Real Life - Videos",
    "link": "https://sukebei.nyaa.si/view/4762092",
    "size": "1.0 GiB",
-   "poster": "",
+   "poster": "https://github.com/kevinhfwang/stremio-sukebei-catalog/releases/download/covers/23c00dc1.jpg",
    "keyword": "反差",
    "first_seen": "2026-11-15T15:21:53.498132+00:00",
    "keywords": [
     "反差"
    ],
-   "cover_status": "failed:1"
+   "cover_status": "bt"
   },
   "503fb50611e9ad77f2302adcb503544d15622877": {
    "id": "503fb50611e9ad77f2302adcb503544d15622877",
@@ -24845,6 +24848,66 @@
    "poster": "",
    "keyword": "tt-jav",
    "first_seen": "2026-11-15T22:25:03.312651+00:00",
+   "keywords": [
+    "tt-jav"
+   ]
+  },
+  "001f8a40e15b7b48affcc41d403e4a0fec975210": {
+   "id": "001f8a40e15b7b48affcc41d403e4a0fec975210",
+   "name": "【VR】【8K】對發育中的白虎小嫩穴不負責任的無套射精_1",
+   "infoHash": "001f8a40e15b7b48affcc41d403e4a0fec975210",
+   "seeders": 1,
+   "nyaa_category": "JAV",
+   "link": "https://sukebei.nyaa.si/download/4762768.torrent",
+   "size": "7.01GB",
+   "poster": "",
+   "keyword": "tt-jav",
+   "first_seen": "2026-11-16T19:32:29.202298+00:00",
+   "keywords": [
+    "tt-jav"
+   ]
+  },
+  "7b68a876b12444ca32fd7d9614c92b212480ef12": {
+   "id": "7b68a876b12444ca32fd7d9614c92b212480ef12",
+   "name": "【VR】【8K】對發育中的白虎小嫩穴不負責任的無套射精_2",
+   "infoHash": "7b68a876b12444ca32fd7d9614c92b212480ef12",
+   "seeders": 1,
+   "nyaa_category": "JAV",
+   "link": "https://sukebei.nyaa.si/download/4762769.torrent",
+   "size": "4.73GB",
+   "poster": "",
+   "keyword": "tt-jav",
+   "first_seen": "2026-11-16T19:32:29.202345+00:00",
+   "keywords": [
+    "tt-jav"
+   ]
+  },
+  "5ac2fc1b17a6e55614357d0f074642ad23bc0feb": {
+   "id": "5ac2fc1b17a6e55614357d0f074642ad23bc0feb",
+   "name": "SSNI-226",
+   "infoHash": "5ac2fc1b17a6e55614357d0f074642ad23bc0feb",
+   "seeders": 1,
+   "nyaa_category": "JAV",
+   "link": "https://www.anirena.com/torrents/01a1e435-88bb-740a-85b5-49c2f972f632.torrent",
+   "size": "1.84GB",
+   "poster": "",
+   "keyword": "tt-jav",
+   "first_seen": "2026-11-16T19:32:29.202365+00:00",
+   "keywords": [
+    "tt-jav"
+   ]
+  },
+  "e2873f80d190236ba4aa08d7dd8f2a128c0f277c": {
+   "id": "e2873f80d190236ba4aa08d7dd8f2a128c0f277c",
+   "name": "【VR】【8K】●歲生日快樂！為了祝賀來攝影工作室進行禮服拍攝的●女在試衣間惡作劇順便戳破处女膜",
+   "infoHash": "e2873f80d190236ba4aa08d7dd8f2a128c0f277c",
+   "seeders": 1,
+   "nyaa_category": "JAV",
+   "link": "https://sukebei.nyaa.si/download/4762660.torrent",
+   "size": "5.29GB",
+   "poster": "",
+   "keyword": "tt-jav",
+   "first_seen": "2026-11-16T19:32:29.202384+00:00",
    "keywords": [
     "tt-jav"
    ]
@@ -26013,7 +26076,11 @@
    "23aa93370123811ba78e3f63b6126b4e825c4caa",
    "73456438b012f31aa93ae84a39a62a4f7ee16e9d",
    "49c9b5ef7d6dfc8136395ee65d4bcbb3dc607a72",
-   "86a2391aa6340f4309c6668e94a1cfee5ccff742"
+   "86a2391aa6340f4309c6668e94a1cfee5ccff742",
+   "001f8a40e15b7b48affcc41d403e4a0fec975210",
+   "7b68a876b12444ca32fd7d9614c92b212480ef12",
+   "5ac2fc1b17a6e55614357d0f074642ad23bc0feb",
+   "e2873f80d190236ba4aa08d7dd8f2a128c0f277c"
   ]
  }
 }
