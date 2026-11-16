@@ -1,5 +1,5 @@
 {
- "updated_at": "2026-11-15T23:00:14+00:00",
+ "updated_at": "2026-11-16T06:57:39+00:00",
  "config": {
   "feed_template": "https://sukebei.nyaa.si/?page=rss&q={keyword}&s=seeders&o=desc",
   "per_keyword_limit": 150,
@@ -19406,7 +19406,7 @@
    "keywords": [
     "泄密"
    ],
-   "cover_status": "failed:1"
+   "cover_status": "failed:9"
   },
   "87a61dc10409de084bf92eda3f5fc8b2f31b222d": {
    "id": "87a61dc10409de084bf92eda3f5fc8b2f31b222d",
@@ -19453,7 +19453,8 @@
    "first_seen": "2026-11-15T04:51:09.405114+00:00",
    "keywords": [
     "泄密"
-   ]
+   ],
+   "cover_status": "failed:1"
   },
   "dd8ca79b3516ff73aa415eb6e98db408f0b4323d": {
    "id": "dd8ca79b3516ff73aa415eb6e98db408f0b4323d",
@@ -22000,7 +22001,8 @@
    "first_seen": "2026-11-15T04:51:22.379642+00:00",
    "keywords": [
     "学生"
-   ]
+   ],
+   "cover_status": "noimg"
   },
   "a7d14ead2926000b82f5348b470e6cfeae13f7b0": {
    "id": "a7d14ead2926000b82f5348b470e6cfeae13f7b0",
@@ -22694,7 +22696,8 @@
    "first_seen": "2026-11-15T04:51:28.196079+00:00",
    "keywords": [
     "直播"
-   ]
+   ],
+   "cover_status": "noimg"
   },
   "a68ffbc52604331e00cc8776cc4fd3c527705941": {
    "id": "a68ffbc52604331e00cc8776cc4fd3c527705941",
@@ -24692,7 +24695,8 @@
    "first_seen": "2026-11-15T15:21:53.498104+00:00",
    "keywords": [
     "反差"
-   ]
+   ],
+   "cover_status": "noimg"
   },
   "23c00dc1b4d613e763463c452bd2327e6707cf0b": {
    "id": "23c00dc1b4d613e763463c452bd2327e6707cf0b",
@@ -24707,7 +24711,8 @@
    "first_seen": "2026-11-15T15:21:53.498132+00:00",
    "keywords": [
     "反差"
-   ]
+   ],
+   "cover_status": "failed:1"
   },
   "503fb50611e9ad77f2302adcb503544d15622877": {
    "id": "503fb50611e9ad77f2302adcb503544d15622877",
