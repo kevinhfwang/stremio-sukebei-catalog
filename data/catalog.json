@@ -1,5 +1,5 @@
 {
- "updated_at": "2026-11-16T20:05:24+00:00",
+ "updated_at": "2026-11-17T08:42:19+00:00",
  "config": {
   "feed_template": "https://sukebei.nyaa.si/?page=rss&q={keyword}&s=seeders&o=desc",
   "per_keyword_limit": 150,
@@ -109,7 +109,7 @@
    "url": "https://sukebei.nyaa.si/?page=rss&q=tt-jav&s=seeders&o=desc"
   }
  ],
- "count": 1626,
+ "count": 1627,
  "items": {
   "91536c64b0e09ad2c7647837633ee3f93ee9c14d": {
    "id": "91536c64b0e09ad2c7647837633ee3f93ee9c14d",
@@ -19548,7 +19548,7 @@
     "学生",
     "泄密"
    ],
-   "cover_status": "failed:1"
+   "cover_status": "failed:9"
   },
   "9c3e317377a084ab68d79990c05bb0c2d7ed60dc": {
    "id": "9c3e317377a084ab68d79990c05bb0c2d7ed60dc",
@@ -22935,13 +22935,13 @@
    "nyaa_category": "Real Life - Videos",
    "link": "https://sukebei.nyaa.si/view/4759185",
    "size": "853.4 MiB",
-   "poster": "",
+   "poster": "https://github.com/kevinhfwang/stremio-sukebei-catalog/releases/download/covers/71b17dbf.jpg",
    "keyword": "反差",
    "first_seen": "2026-11-15T04:51:33.642149+00:00",
    "keywords": [
     "反差"
    ],
-   "cover_status": "failed:1"
+   "cover_status": "bt"
   },
   "17752fa7b626105af858651e5ba91c4852a014c1": {
    "id": "17752fa7b626105af858651e5ba91c4852a014c1",
@@ -24147,7 +24147,8 @@
    "keywords": [
     "反差",
     "泄密"
-   ]
+   ],
+   "cover_status": "failed:1"
   },
   "3bd3c3c2ccdbf20a3188734ffb3c76899d396129": {
    "id": "3bd3c3c2ccdbf20a3188734ffb3c76899d396129",
@@ -24908,6 +24909,21 @@
    "poster": "",
    "keyword": "tt-jav",
    "first_seen": "2026-11-16T19:32:29.202384+00:00",
+   "keywords": [
+    "tt-jav"
+   ]
+  },
+  "712f9afb2d053940e329ac7cd1e85746f3f5079b": {
+   "id": "712f9afb2d053940e329ac7cd1e85746f3f5079b",
+   "name": "CSCT-005_LTX",
+   "infoHash": "712f9afb2d053940e329ac7cd1e85746f3f5079b",
+   "seeders": 1,
+   "nyaa_category": "JAV",
+   "link": "https://www.anirena.com/torrents/01a1e697-2a89-7325-bf25-48e7ecc58cad.torrent",
+   "size": "2.57GB",
+   "poster": "",
+   "keyword": "tt-jav",
+   "first_seen": "2026-11-17T08:10:39.127243+00:00",
    "keywords": [
     "tt-jav"
    ]
@@ -26080,7 +26096,8 @@
    "001f8a40e15b7b48affcc41d403e4a0fec975210",
    "7b68a876b12444ca32fd7d9614c92b212480ef12",
    "5ac2fc1b17a6e55614357d0f074642ad23bc0feb",
-   "e2873f80d190236ba4aa08d7dd8f2a128c0f277c"
+   "e2873f80d190236ba4aa08d7dd8f2a128c0f277c",
+   "712f9afb2d053940e329ac7cd1e85746f3f5079b"
   ]
  }
 }
