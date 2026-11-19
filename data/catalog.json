@@ -1,5 +1,5 @@
 {
- "updated_at": "2026-11-19T08:04:40+00:00",
+ "updated_at": "2026-11-19T19:09:29+00:00",
  "config": {
   "feed_template": "https://sukebei.nyaa.si/?page=rss&q={keyword}&s=seeders&o=desc",
   "per_keyword_limit": 150,
@@ -25572,13 +25572,13 @@
    "nyaa_category": "Real Life - Videos",
    "link": "https://sukebei.nyaa.si/view/4763952",
    "size": "390.0 MiB",
-   "poster": "",
+   "poster": "https://github.com/kevinhfwang/stremio-sukebei-catalog/releases/download/covers/14676ba8.png",
    "keyword": "网红",
    "first_seen": "2026-11-18T05:56:06.927514+00:00",
    "keywords": [
     "网红"
    ],
-   "cover_status": "failed:1"
+   "cover_status": "bt"
   },
   "c29a63d778fe8a02da8ede9cba7f286468648dad": {
    "id": "c29a63d778fe8a02da8ede9cba7f286468648dad",
@@ -25774,12 +25774,13 @@
    "nyaa_category": "Real Life - Videos",
    "link": "https://sukebei.nyaa.si/view/4763375",
    "size": "2.6 GiB",
-   "poster": "",
+   "poster": "https://c0.jdbstatic.com/covers/96/96dXqE.jpg",
    "keyword": "学生",
    "first_seen": "2026-11-18T05:56:11.633039+00:00",
    "keywords": [
     "学生"
-   ]
+   ],
+   "cover_status": "javdb"
   },
   "79e69f095727ce8a69963f691b7e9ffd481a3798": {
    "id": "79e69f095727ce8a69963f691b7e9ffd481a3798",
@@ -25789,12 +25790,13 @@
    "nyaa_category": "Real Life - Videos",
    "link": "https://sukebei.nyaa.si/view/4763182",
    "size": "3.2 GiB",
-   "poster": "",
+   "poster": "https://c0.jdbstatic.com/covers/mv/mv5dD.jpg",
    "keyword": "学生",
    "first_seen": "2026-11-18T05:56:11.633075+00:00",
    "keywords": [
     "学生"
-   ]
+   ],
+   "cover_status": "javdb"
   },
   "0abeeb9babf7749b3eb6f946fba809a0fa4052fd": {
    "id": "0abeeb9babf7749b3eb6f946fba809a0fa4052fd",
