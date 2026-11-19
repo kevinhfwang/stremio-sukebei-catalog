@@ -1,5 +1,5 @@
 {
- "updated_at": "2026-11-18T19:07:31+00:00",
+ "updated_at": "2026-11-19T08:04:40+00:00",
  "config": {
   "feed_template": "https://sukebei.nyaa.si/?page=rss&q={keyword}&s=seeders&o=desc",
   "per_keyword_limit": 150,
@@ -25001,13 +25001,13 @@
    "nyaa_category": "Real Life - Videos",
    "link": "https://sukebei.nyaa.si/view/4763754",
    "size": "4.3 GiB",
-   "poster": "",
+   "poster": "https://github.com/kevinhfwang/stremio-sukebei-catalog/releases/download/covers/256c0eb9.png",
    "keyword": "泄密",
    "first_seen": "2026-11-18T05:56:00.775793+00:00",
    "keywords": [
     "泄密"
    ],
-   "cover_status": "failed:1"
+   "cover_status": "bt"
   },
   "3dd054f526b3660b57923ecb38a96c712b719f82": {
    "id": "3dd054f526b3660b57923ecb38a96c712b719f82",
@@ -25562,7 +25562,7 @@
    "keywords": [
     "网红"
    ],
-   "cover_status": "failed:1"
+   "cover_status": "failed:9"
   },
   "14676ba842fc4ded594b33e6d9da501594b2e955": {
    "id": "14676ba842fc4ded594b33e6d9da501594b2e955",
@@ -25577,7 +25577,8 @@
    "first_seen": "2026-11-18T05:56:06.927514+00:00",
    "keywords": [
     "网红"
-   ]
+   ],
+   "cover_status": "failed:1"
   },
   "c29a63d778fe8a02da8ede9cba7f286468648dad": {
    "id": "c29a63d778fe8a02da8ede9cba7f286468648dad",
@@ -26437,13 +26438,13 @@
    "nyaa_category": "Real Life - Videos",
    "link": "https://sukebei.nyaa.si/view/4763393",
    "size": "409.9 MiB",
-   "poster": "",
+   "poster": "https://github.com/kevinhfwang/stremio-sukebei-catalog/releases/download/covers/7ef1ffe1.jpg",
    "keyword": "反差",
    "first_seen": "2026-11-18T05:56:20.999433+00:00",
    "keywords": [
     "反差"
    ],
-   "cover_status": "failed:1"
+   "cover_status": "bt"
   },
   "4ed19449fef7fc58d23a2ad7e3394ef93a727ae2": {
    "id": "4ed19449fef7fc58d23a2ad7e3394ef93a727ae2",
