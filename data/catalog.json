@@ -1,5 +1,5 @@
 {
- "updated_at": "2026-11-19T19:09:29+00:00",
+ "updated_at": "2026-11-20T07:47:53+00:00",
  "config": {
   "feed_template": "https://sukebei.nyaa.si/?page=rss&q={keyword}&s=seeders&o=desc",
   "per_keyword_limit": 150,
@@ -109,7 +109,7 @@
    "url": "https://sukebei.nyaa.si/?page=rss&q=tt-jav&s=seeders&o=desc"
   }
  ],
- "count": 1786,
+ "count": 1790,
  "items": {
   "91536c64b0e09ad2c7647837633ee3f93ee9c14d": {
    "id": "91536c64b0e09ad2c7647837633ee3f93ee9c14d",
@@ -25806,12 +25806,13 @@
    "nyaa_category": "Real Life - Videos",
    "link": "https://sukebei.nyaa.si/view/4763063",
    "size": "641.8 MiB",
-   "poster": "",
+   "poster": "https://c0.jdbstatic.com/covers/bz/Bz5gK4.jpg",
    "keyword": "学生",
    "first_seen": "2026-11-18T05:56:11.633093+00:00",
    "keywords": [
     "学生"
-   ]
+   ],
+   "cover_status": "javdb"
   },
   "e34b3378f5072b0f9492c396f5014c7cdd472b6c": {
    "id": "e34b3378f5072b0f9492c396f5014c7cdd472b6c",
@@ -25821,12 +25822,13 @@
    "nyaa_category": "Real Life - Videos",
    "link": "https://sukebei.nyaa.si/view/4763051",
    "size": "1.5 GiB",
-   "poster": "",
+   "poster": "https://c0.jdbstatic.com/covers/a8/a8DYnr.jpg",
    "keyword": "学生",
    "first_seen": "2026-11-18T05:56:11.633102+00:00",
    "keywords": [
     "学生"
-   ]
+   ],
+   "cover_status": "javdb"
   },
   "da2a468cc5dab6599183b62cb08c088a2388571a": {
    "id": "da2a468cc5dab6599183b62cb08c088a2388571a",
@@ -27347,6 +27349,66 @@
    "keywords": [
     "tt-jav"
    ]
+  },
+  "ed21519214357bd65de46f6cfb36139ec5a7b434": {
+   "id": "ed21519214357bd65de46f6cfb36139ec5a7b434",
+   "name": "SNOS-199",
+   "infoHash": "ed21519214357bd65de46f6cfb36139ec5a7b434",
+   "seeders": 1,
+   "nyaa_category": "JAV",
+   "link": "https://www.anirena.com/torrents/01a1f4c3-7f9b-753d-8393-4d804ba8e581.torrent",
+   "size": "5.05GB",
+   "poster": "",
+   "keyword": "tt-jav",
+   "first_seen": "2026-11-20T07:20:22.254689+00:00",
+   "keywords": [
+    "tt-jav"
+   ]
+  },
+  "cafb597cf13cd6d629560b909cdf9656f08d328f": {
+   "id": "cafb597cf13cd6d629560b909cdf9656f08d328f",
+   "name": "【VR】【8K】對樸素同學的學校泳裝姿態心動…用嬌小身體無死角地使用讓單戀的我連續射精的沉默好色游泳部經理_3",
+   "infoHash": "cafb597cf13cd6d629560b909cdf9656f08d328f",
+   "seeders": 1,
+   "nyaa_category": "JAV",
+   "link": "https://sukebei.nyaa.si/download/4765210.torrent",
+   "size": "4.75GB",
+   "poster": "",
+   "keyword": "tt-jav",
+   "first_seen": "2026-11-20T07:20:22.254742+00:00",
+   "keywords": [
+    "tt-jav"
+   ]
+  },
+  "de90794806c6cb9f14a45f1cdca3dae14020dc7d": {
+   "id": "de90794806c6cb9f14a45f1cdca3dae14020dc7d",
+   "name": "【VR】【8K】對樸素同學的學校泳裝姿態心動…用嬌小身體無死角地使用讓單戀的我連續射精的沉默好色游泳部經理_2",
+   "infoHash": "de90794806c6cb9f14a45f1cdca3dae14020dc7d",
+   "seeders": 1,
+   "nyaa_category": "JAV",
+   "link": "https://sukebei.nyaa.si/download/4765208.torrent",
+   "size": "2.47GB",
+   "poster": "",
+   "keyword": "tt-jav",
+   "first_seen": "2026-11-20T07:20:22.254764+00:00",
+   "keywords": [
+    "tt-jav"
+   ]
+  },
+  "1c76f2c1456aa32e47a794e7af673cf225b0cb46": {
+   "id": "1c76f2c1456aa32e47a794e7af673cf225b0cb46",
+   "name": "【VR】【8K】對樸素同學的學校泳裝姿態心動…用嬌小身體無死角地使用讓單戀的我連續射精的沉默好色游泳部經理_1",
+   "infoHash": "1c76f2c1456aa32e47a794e7af673cf225b0cb46",
+   "seeders": 1,
+   "nyaa_category": "JAV",
+   "link": "https://sukebei.nyaa.si/download/4765209.torrent",
+   "size": "3.92GB",
+   "poster": "",
+   "keyword": "tt-jav",
+   "first_seen": "2026-11-20T07:20:22.254783+00:00",
+   "keywords": [
+    "tt-jav"
+   ]
   }
  },
  "catalogs": {
@@ -28545,7 +28607,11 @@
    "e56075a1779a1d052ded88f5f93cc4e6e3d79f2c",
    "5093302c22243384bcab6adf96f0aa0cc0c5ee66",
    "99b49f9fc24690acedf764a171137a93c311f7ed",
-   "19a29e47a2e191851376a0a4897fe59cc380e850"
+   "19a29e47a2e191851376a0a4897fe59cc380e850",
+   "ed21519214357bd65de46f6cfb36139ec5a7b434",
+   "cafb597cf13cd6d629560b909cdf9656f08d328f",
+   "de90794806c6cb9f14a45f1cdca3dae14020dc7d",
+   "1c76f2c1456aa32e47a794e7af673cf225b0cb46"
   ]
  }
 }
