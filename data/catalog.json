@@ -1,5 +1,5 @@
 {
- "updated_at": "2026-11-20T18:47:16+00:00",
+ "updated_at": "2026-11-21T07:47:45+00:00",
  "config": {
   "feed_template": "https://sukebei.nyaa.si/?page=rss&q={keyword}&s=seeders&o=desc",
   "per_keyword_limit": 150,
@@ -109,7 +109,7 @@
    "url": "https://sukebei.nyaa.si/?page=rss&q=tt-jav&s=seeders&o=desc"
   }
  ],
- "count": 1795,
+ "count": 1799,
  "items": {
   "91536c64b0e09ad2c7647837633ee3f93ee9c14d": {
    "id": "91536c64b0e09ad2c7647837633ee3f93ee9c14d",
@@ -27484,6 +27484,66 @@
    "keywords": [
     "tt-jav"
    ]
+  },
+  "d0c227be52b572e8b27520f761177e5555cdc5d7": {
+   "id": "d0c227be52b572e8b27520f761177e5555cdc5d7",
+   "name": "[HispaJAV] SNIS-129-LTX - Tengamos Sexo al Aire Libre (Shion Utsunomiya) [1080p] [E892A0F3].mkv",
+   "infoHash": "d0c227be52b572e8b27520f761177e5555cdc5d7",
+   "seeders": 1,
+   "nyaa_category": "JAV",
+   "link": "https://sukebei.nyaa.si/download/4767009.torrent",
+   "size": "2.29GB",
+   "poster": "",
+   "keyword": "tt-jav",
+   "first_seen": "2026-11-21T07:20:06.750816+00:00",
+   "keywords": [
+    "tt-jav"
+   ]
+  },
+  "06b3c0562ec18769c7b834f1cff0b44004abc187": {
+   "id": "06b3c0562ec18769c7b834f1cff0b44004abc187",
+   "name": "[HispaJAV] MIRD-150-LTX - Un Par de Esculturales Mujeres (Hitomi Tanaka, Anri Okita) [1080p] [1A9DA19C].mkv",
+   "infoHash": "06b3c0562ec18769c7b834f1cff0b44004abc187",
+   "seeders": 1,
+   "nyaa_category": "JAV",
+   "link": "https://sukebei.nyaa.si/download/4767008.torrent",
+   "size": "3.63GB",
+   "poster": "",
+   "keyword": "tt-jav",
+   "first_seen": "2026-11-21T07:20:06.750856+00:00",
+   "keywords": [
+    "tt-jav"
+   ]
+  },
+  "27e5018022b98baf874cbd03dca423f276c4ca14": {
+   "id": "27e5018022b98baf874cbd03dca423f276c4ca14",
+   "name": "[HispaJAV] ATID-535-LTX - Mi Madre se Ocupa de mis Deseos (Ayaka Mutou) [1080p] [84FFB684].mkv",
+   "infoHash": "27e5018022b98baf874cbd03dca423f276c4ca14",
+   "seeders": 1,
+   "nyaa_category": "JAV",
+   "link": "https://sukebei.nyaa.si/download/4767007.torrent",
+   "size": "821.29MB",
+   "poster": "",
+   "keyword": "tt-jav",
+   "first_seen": "2026-11-21T07:20:06.750871+00:00",
+   "keywords": [
+    "tt-jav"
+   ]
+  },
+  "d5bdc41da8725a9a49ab0c465fbd948ca22eb147": {
+   "id": "d5bdc41da8725a9a49ab0c465fbd948ca22eb147",
+   "name": "[HispaJAV] ACHJ-005-LTX - La Oficinista Culona (Nao Jinguji) [1080p] [CC092775].mkv",
+   "infoHash": "d5bdc41da8725a9a49ab0c465fbd948ca22eb147",
+   "seeders": 1,
+   "nyaa_category": "JAV",
+   "link": "https://sukebei.nyaa.si/download/4767006.torrent",
+   "size": "2.51GB",
+   "poster": "",
+   "keyword": "tt-jav",
+   "first_seen": "2026-11-21T07:20:06.750883+00:00",
+   "keywords": [
+    "tt-jav"
+   ]
   }
  },
  "catalogs": {
@@ -28691,7 +28751,11 @@
    "1dfe78198da499c73356d7b9dbb441742a4813b9",
    "5000d19005e4f0cd112c87bde7e585df1ed099b3",
    "c80ddd5b362cf9e107679a93eaf89a1ea68246fc",
-   "feea44c9f0e5dafab61091a8da7da9ca18f91dfd"
+   "feea44c9f0e5dafab61091a8da7da9ca18f91dfd",
+   "d0c227be52b572e8b27520f761177e5555cdc5d7",
+   "06b3c0562ec18769c7b834f1cff0b44004abc187",
+   "27e5018022b98baf874cbd03dca423f276c4ca14",
+   "d5bdc41da8725a9a49ab0c465fbd948ca22eb147"
   ]
  }
 }
