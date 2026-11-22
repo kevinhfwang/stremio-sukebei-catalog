@@ -1,5 +1,5 @@
 {
- "updated_at": "2026-11-21T23:34:13+00:00",
+ "updated_at": "2026-11-22T07:12:38+00:00",
  "config": {
   "feed_template": "https://sukebei.nyaa.si/?page=rss&q={keyword}&s=seeders&o=desc",
   "per_keyword_limit": 150,
@@ -109,7 +109,7 @@
    "url": "https://sukebei.nyaa.si/?page=rss&q=tt-jav&s=seeders&o=desc"
   }
  ],
- "count": 1804,
+ "count": 1805,
  "items": {
   "91536c64b0e09ad2c7647837633ee3f93ee9c14d": {
    "id": "91536c64b0e09ad2c7647837633ee3f93ee9c14d",
@@ -27619,6 +27619,21 @@
    "keywords": [
     "tt-jav"
    ]
+  },
+  "089665a060c005d7ec4fe16facbd22b4a478f6b5": {
+   "id": "089665a060c005d7ec4fe16facbd22b4a478f6b5",
+   "name": "ROYD-376-LTX",
+   "infoHash": "089665a060c005d7ec4fe16facbd22b4a478f6b5",
+   "seeders": 1,
+   "nyaa_category": "JAV",
+   "link": "https://www.anirena.com/torrents/01a20187-dbd2-70ef-829c-8af6ec523814.torrent",
+   "size": "3.1GB",
+   "poster": "",
+   "keyword": "tt-jav",
+   "first_seen": "2026-11-22T06:44:01.990598+00:00",
+   "keywords": [
+    "tt-jav"
+   ]
   }
  },
  "catalogs": {
@@ -28835,7 +28850,8 @@
    "1cdf6f7ae7272020c6265e403ac1fa6dcfd07723",
    "553b0f188d707171c4738b82b9272ef197e6943c",
    "dc426fe01a049da38b3d22282e7f2cbc4f8a34d8",
-   "73c61a626803491e6391db7f03d7cca6efbbdb2c"
+   "73c61a626803491e6391db7f03d7cca6efbbdb2c",
+   "089665a060c005d7ec4fe16facbd22b4a478f6b5"
   ]
  }
 }
