@@ -1,5 +1,5 @@
 {
- "updated_at": "2026-11-22T07:12:38+00:00",
+ "updated_at": "2026-11-22T17:58:41+00:00",
  "config": {
   "feed_template": "https://sukebei.nyaa.si/?page=rss&q={keyword}&s=seeders&o=desc",
   "per_keyword_limit": 150,
@@ -109,7 +109,7 @@
    "url": "https://sukebei.nyaa.si/?page=rss&q=tt-jav&s=seeders&o=desc"
   }
  ],
- "count": 1805,
+ "count": 1807,
  "items": {
   "91536c64b0e09ad2c7647837633ee3f93ee9c14d": {
    "id": "91536c64b0e09ad2c7647837633ee3f93ee9c14d",
@@ -27634,6 +27634,36 @@
    "keywords": [
     "tt-jav"
    ]
+  },
+  "2cf5e731cab30d3999c36999f31ec4dce4de983c": {
+   "id": "2cf5e731cab30d3999c36999f31ec4dce4de983c",
+   "name": "【VR】【8K】最喜歡我的狡猾小不點們在秘密地點天真無邪肥皂遊戲！～勤奮交替騎乘位滑溜溜肉棒爭奪戰～_2",
+   "infoHash": "2cf5e731cab30d3999c36999f31ec4dce4de983c",
+   "seeders": 1,
+   "nyaa_category": "JAV",
+   "link": "https://sukebei.nyaa.si/download/4768359.torrent",
+   "size": "5.91GB",
+   "poster": "",
+   "keyword": "tt-jav",
+   "first_seen": "2026-11-22T17:31:09.772847+00:00",
+   "keywords": [
+    "tt-jav"
+   ]
+  },
+  "844bfee4c90f4b24fc974b5c3ec19dab1d0e62e1": {
+   "id": "844bfee4c90f4b24fc974b5c3ec19dab1d0e62e1",
+   "name": "【VR】【8K】最喜歡我的狡猾小不點們在秘密地點天真無邪肥皂遊戲！～勤奮交替騎乘位滑溜溜肉棒爭奪戰～_1",
+   "infoHash": "844bfee4c90f4b24fc974b5c3ec19dab1d0e62e1",
+   "seeders": 1,
+   "nyaa_category": "JAV",
+   "link": "https://sukebei.nyaa.si/download/4768358.torrent",
+   "size": "8.68GB",
+   "poster": "",
+   "keyword": "tt-jav",
+   "first_seen": "2026-11-22T17:31:09.772894+00:00",
+   "keywords": [
+    "tt-jav"
+   ]
   }
  },
  "catalogs": {
@@ -28851,7 +28881,9 @@
    "553b0f188d707171c4738b82b9272ef197e6943c",
    "dc426fe01a049da38b3d22282e7f2cbc4f8a34d8",
    "73c61a626803491e6391db7f03d7cca6efbbdb2c",
-   "089665a060c005d7ec4fe16facbd22b4a478f6b5"
+   "089665a060c005d7ec4fe16facbd22b4a478f6b5",
+   "2cf5e731cab30d3999c36999f31ec4dce4de983c",
+   "844bfee4c90f4b24fc974b5c3ec19dab1d0e62e1"
   ]
  }
 }
