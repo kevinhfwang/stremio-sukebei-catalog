@@ -1,5 +1,5 @@
 {
- "updated_at": "2026-11-24T10:29:27+00:00",
+ "updated_at": "2026-11-25T02:27:12+00:00",
  "config": {
   "feed_template": "https://sukebei.nyaa.si/?page=rss&q={keyword}&s=seeders&o=desc",
   "per_keyword_limit": 150,
@@ -109,7 +109,7 @@
    "url": "https://sukebei.nyaa.si/?page=rss&q=tt-jav&s=seeders&o=desc"
   }
  ],
- "count": 1807,
+ "count": 1812,
  "items": {
   "91536c64b0e09ad2c7647837633ee3f93ee9c14d": {
    "id": "91536c64b0e09ad2c7647837633ee3f93ee9c14d",
@@ -27664,6 +27664,81 @@
    "keywords": [
     "tt-jav"
    ]
+  },
+  "41a6b282872111cbd89f946cbadc37d67030fef6": {
+   "id": "41a6b282872111cbd89f946cbadc37d67030fef6",
+   "name": "[HispaJAV] SONE-012-LTX - La Mucama Tetona (Hikaru Nagi) [1080p] [FC269D38].mkv",
+   "infoHash": "41a6b282872111cbd89f946cbadc37d67030fef6",
+   "seeders": 1,
+   "nyaa_category": "JAV",
+   "link": "https://sukebei.nyaa.si/download/4770446.torrent",
+   "size": "2.24GB",
+   "poster": "",
+   "keyword": "tt-jav",
+   "first_seen": "2026-11-25T01:59:41.751079+00:00",
+   "keywords": [
+    "tt-jav"
+   ]
+  },
+  "0acd337545d33eb2e66bf43dc73ad292f62bd930": {
+   "id": "0acd337545d33eb2e66bf43dc73ad292f62bd930",
+   "name": "[HispaJAV] HMN-032-LTX - La Catadora de Semen (Ai Sayama) [1080p] [97D09FCD].mkv",
+   "infoHash": "0acd337545d33eb2e66bf43dc73ad292f62bd930",
+   "seeders": 1,
+   "nyaa_category": "JAV",
+   "link": "https://sukebei.nyaa.si/download/4770445.torrent",
+   "size": "946.51MB",
+   "poster": "",
+   "keyword": "tt-jav",
+   "first_seen": "2026-11-25T01:59:41.751116+00:00",
+   "keywords": [
+    "tt-jav"
+   ]
+  },
+  "690d8b400cd5924c3f3c431640df631d6ad2b509": {
+   "id": "690d8b400cd5924c3f3c431640df631d6ad2b509",
+   "name": "[HispaJAV] CSCT-002-LTX - Guardianes del Coño (Mitsuki Nagisa) [1080p] [3D9AA76A].mkv",
+   "infoHash": "690d8b400cd5924c3f3c431640df631d6ad2b509",
+   "seeders": 1,
+   "nyaa_category": "JAV",
+   "link": "https://sukebei.nyaa.si/download/4770444.torrent",
+   "size": "2.15GB",
+   "poster": "",
+   "keyword": "tt-jav",
+   "first_seen": "2026-11-25T01:59:41.751129+00:00",
+   "keywords": [
+    "tt-jav"
+   ]
+  },
+  "13a3c100f0c2333f26213ebb51c0d5f00e212d01": {
+   "id": "13a3c100f0c2333f26213ebb51c0d5f00e212d01",
+   "name": "[HispaJAV] ABF-125-LTX - La Chica Obediente (Remu Suzumori) [1080p] [57ECBAB3].mkv",
+   "infoHash": "13a3c100f0c2333f26213ebb51c0d5f00e212d01",
+   "seeders": 1,
+   "nyaa_category": "JAV",
+   "link": "https://sukebei.nyaa.si/download/4770443.torrent",
+   "size": "1.36GB",
+   "poster": "",
+   "keyword": "tt-jav",
+   "first_seen": "2026-11-25T01:59:41.751139+00:00",
+   "keywords": [
+    "tt-jav"
+   ]
+  },
+  "d4de1acc707d69dc45b84ddfd629166233b1451d": {
+   "id": "d4de1acc707d69dc45b84ddfd629166233b1451d",
+   "name": "MIMK-101",
+   "infoHash": "d4de1acc707d69dc45b84ddfd629166233b1451d",
+   "seeders": 1,
+   "nyaa_category": "JAV",
+   "link": "https://www.anirena.com/torrents/01a20e72-72b2-75d8-875b-6831ca1eb15a.torrent",
+   "size": "5GB",
+   "poster": "",
+   "keyword": "tt-jav",
+   "first_seen": "2026-11-25T01:59:41.751155+00:00",
+   "keywords": [
+    "tt-jav"
+   ]
   }
  },
  "catalogs": {
@@ -28883,7 +28958,12 @@
    "73c61a626803491e6391db7f03d7cca6efbbdb2c",
    "089665a060c005d7ec4fe16facbd22b4a478f6b5",
    "2cf5e731cab30d3999c36999f31ec4dce4de983c",
-   "844bfee4c90f4b24fc974b5c3ec19dab1d0e62e1"
+   "844bfee4c90f4b24fc974b5c3ec19dab1d0e62e1",
+   "41a6b282872111cbd89f946cbadc37d67030fef6",
+   "0acd337545d33eb2e66bf43dc73ad292f62bd930",
+   "690d8b400cd5924c3f3c431640df631d6ad2b509",
+   "13a3c100f0c2333f26213ebb51c0d5f00e212d01",
+   "d4de1acc707d69dc45b84ddfd629166233b1451d"
   ]
  }
 }
