@@ -1,5 +1,5 @@
 {
- "updated_at": "2026-11-25T20:29:53+00:00",
+ "updated_at": "2026-11-26T08:58:47+00:00",
  "config": {
   "feed_template": "https://sukebei.nyaa.si/?page=rss&q={keyword}&s=seeders&o=desc",
   "per_keyword_limit": 150,
@@ -109,7 +109,7 @@
    "url": "https://sukebei.nyaa.si/?page=rss&q=tt-jav&s=seeders&o=desc"
   }
  ],
- "count": 1812,
+ "count": 1813,
  "items": {
   "91536c64b0e09ad2c7647837633ee3f93ee9c14d": {
    "id": "91536c64b0e09ad2c7647837633ee3f93ee9c14d",
@@ -27739,6 +27739,21 @@
    "keywords": [
     "tt-jav"
    ]
+  },
+  "444d682d6621c68c0153eda51e7735250c9c81f2": {
+   "id": "444d682d6621c68c0153eda51e7735250c9c81f2",
+   "name": "MARAA-011_HD.mp4",
+   "infoHash": "444d682d6621c68c0153eda51e7735250c9c81f2",
+   "seeders": 1,
+   "nyaa_category": "JAV",
+   "link": "https://file.nanojav.com/torrents/444d682d6621c68c0153eda51e7735250c9c81f2/tokyotosho/nanojav.com.maraa-011.4gb.torrent",
+   "size": "4.31GB",
+   "poster": "",
+   "keyword": "tt-jav",
+   "first_seen": "2026-11-26T08:29:44.281660+00:00",
+   "keywords": [
+    "tt-jav"
+   ]
   }
  },
  "catalogs": {
@@ -28963,7 +28978,8 @@
    "0acd337545d33eb2e66bf43dc73ad292f62bd930",
    "690d8b400cd5924c3f3c431640df631d6ad2b509",
    "13a3c100f0c2333f26213ebb51c0d5f00e212d01",
-   "d4de1acc707d69dc45b84ddfd629166233b1451d"
+   "d4de1acc707d69dc45b84ddfd629166233b1451d",
+   "444d682d6621c68c0153eda51e7735250c9c81f2"
   ]
  }
 }
